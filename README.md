@@ -4,7 +4,7 @@ Platon
 Platon is a domain-specific language for authoring 
 dialog systems based on Groovy, a dynamic programming language for 
 the Java Virtual Machine (JVM).
-Platon is a fully-featured tool for dialog management that is also 
+It is a fully-featured tool for dialog management that is also 
 particularly suitable for, but not limited to, rapid prototyping,
 making it possible to create a basic multilingual dialog system with
 minimal overhead and then gradually extend it to a complete system.
