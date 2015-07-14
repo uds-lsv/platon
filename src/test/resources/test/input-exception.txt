@@ -1,0 +1,5 @@
+input(
+	en: ~/.*/
+) {
+	throw new RuntimeException("blubb");
+}

@@ -1,0 +1,2 @@
+println 'this is valid groovy code'
+unfortunately, this is a syntax error
