@@ -184,17 +184,103 @@ class ScriptBindings {
 	 *   language).
 	 * @param action
 	 */
-	@TypeChecked(TypeCheckingMode.SKIP)
-	public void scriptInput(priority=true, languagePatterns, Closure action) {
-		if (!scriptAdapter.initializing) {
-			throw new IllegalStateException("input has to be a top-level statement!");
+	public void scriptInput(
+		a,
+		b,
+		c=null
+	) {
+		if (scriptAdapter.initializing) {
+			def priority = true;
+			def languagePatterns;
+			Closure action;
+			if (c == null) {
+				languagePatterns = a;
+				if (!(b instanceof Closure)) {
+					throw new IllegalArgumentException("Last argument hast to be a closure!");
+				}
+				action = (Closure)b;
+			} else {
+				priority = a;
+				languagePatterns = b;
+				if (!(c instanceof Closure)) {
+					throw new IllegalArgumentException("Last argument has to be a closure!");
+				}
+				action = (Closure)c;
+			}
+			
+			scriptInputInitializing(priority, languagePatterns, action);
+			
+		} else {
+			if (!(b instanceof Closure)) {
+				throw new IllegalArgumentException("Second argument has to be a closure!");
+			}
+			if (c != null && !(c instanceof Closure)) {
+				throw new IllegalArgumentException("Last argument has to be a closure!");
+			}
+			
+			def languagePatterns = a;
+			Closure action = (Closure)b;
+			Closure elseAction = (Closure)c;
+			
+			scriptInputRuntime(languagePatterns, action, elseAction);
+		}
+	}
+	
+	private void scriptInputRuntime(
+		languagePatterns,
+		Closure action,
+		Closure elseAction
+	) {
+		logger.debug("Runtime input statement: languagePatterns: ${languagePatterns} action: ${action} elseAction: ${elseAction}");
+	
+		if (scriptAdapter.priorityInputAction != null) {
+			throw new RuntimeException("There can be only one priority input action! Existing: " + scriptAdapter.priorityInputAction);
 		}
 		
+		assert (scriptAdapter.focusAgentInstance != null);
+		
+		Object patterns;
+		if (languagePatterns instanceof Map) {
+			if (!languagePatterns.containsKey(scriptAdapter.language)) {
+				logger.warn("Missing language ${scriptAdapter.language} in input ${languagePatterns}")
+				return;
+			}
+			
+			patterns = languagePatterns[scriptAdapter.language];
+		
+		} else {
+			patterns = languagePatterns;
+		}
+		
+		if (patterns instanceof Iterable) {
+			// TODO
+			throw new RuntimeException("Iterable patterns not supported in runtime input statements at the moment.")
+		}
+		
+		scriptAdapter.setPriorityInputAction(
+			new TwoCasePatternAction(
+				patterns,
+				scriptAdapter.focusAgentInstance,
+				action,
+				elseAction,
+				Double.POSITIVE_INFINITY
+			)
+		);
+	}
+	
+	private void scriptInputInitializing(
+		priority=true,
+		languagePatterns,
+		Closure action
+	) {
 		if (!true.is(priority) && !(Number.isAssignableFrom(priority.getClass()))) {
 			throw new IllegalArgumentException("Bad value for priority: " + priority)
 		}
+		double doublePriority;
 		if (true.is(priority)) {
-			priority = Double.POSITIVE_INFINITY;
+			doublePriority = Double.POSITIVE_INFINITY;
+		} else {
+			doublePriority = (Double)priority;
 		}
 		
 		Object patterns;
@@ -226,7 +312,7 @@ class ScriptBindings {
 					);
 				}
 			
-				agentUnderConstruction.addInputAction(pattern, action, priority);
+				agentUnderConstruction.addInputAction(pattern, action, doublePriority);
 			}
 		
 		} else {
@@ -243,10 +329,10 @@ class ScriptBindings {
 				pattern = Pattern.compile(pattern.pattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 			}
 			
-			agentUnderConstruction.addInputAction(pattern, action, priority);
+			agentUnderConstruction.addInputAction(pattern, action, doublePriority);
 		}
 	}
-
+	
 	public void scriptObjectModified(Object fromObjectState, Closure toObjectState, Closure action) {
 		if (!(fromObjectState instanceof Closure || fromObjectState instanceof String)) {
 			throw new IllegalArgumentException("Invalid fromObjectState filter: " + fromObjectState);

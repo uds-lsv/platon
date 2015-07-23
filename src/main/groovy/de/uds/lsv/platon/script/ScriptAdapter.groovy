@@ -67,6 +67,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	
 	Map<String,Agent> agents = [:];
 	AgentStack agentStack;
+	AgentInstance focusAgentInstance = null;
 	
 	// baseAgent is not really an agent, it is on top of the stack
 	// when no other agent is active, but it can not be removed
@@ -74,7 +75,11 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	Agent baseAgent;
 
 	Agent initialAgent;
-	
+
+	// Top priority input action that's executed before
+	// all agent actions
+	TwoCasePatternAction priorityInputAction = null;
+		
 	private ExceptionMapper exceptionMapper;
 	
 	IdleManager idleManager;
@@ -404,24 +409,70 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
 	private boolean handlePreparedInput(Object currentInput, Map<String,String> details) {
-		List matching = new ArrayList();
+		assert (focusAgentInstance == null);
 		
-		for (AgentInstance agent : agentStack) {
-			for (PatternAction patternAction : agent.getInputActions()) {
+		// Handle priority input action first
+		if (priorityInputAction != null) {
+			TwoCasePatternAction patternAction = priorityInputAction;
+			priorityInputAction = null;
+			focusAgentInstance = patternAction.action.agentInstance.get();
+			assert (focusAgentInstance != null);
+			try {
 				Object result = patternAction.matches(currentInput, details);
 				if (result != null) {
-					if (patternAction.priority == Double.POSITIVE_INFINITY) {
-						currentInput = runInputAction(patternAction.action, currentInput, result);
-						if (currentInput == null) {
-							return true;
+					// match
+					currentInput = runInputAction(patternAction.action, currentInput, result);
+					if (currentInput == null) {
+						// no next()
+						return true;
+					}
+				} else if (patternAction.elseAction != null) {
+					// no match, elseAction available
+					currentInput = runInputAction(patternAction.elseAction, currentInput, result);
+					if (currentInput == null) {
+						return true;
+					}
+				} else {
+					// no match and no elseAction
+					// => do nothing, but return true because there
+					// was a priority action
+					return true;
+				}
+				
+				// if we make it here, next() was called
+			}
+			finally {
+				focusAgentInstance = null;
+			}
+		}
+		
+		// Now go through the agent stack
+		List matching = new ArrayList();
+		Iterator<AgentInstance> agentIterator = agentStack.iterator();
+		try {
+			while (agentIterator.hasNext()) {
+				focusAgentInstance = agentIterator.next();
+				for (PatternAction patternAction : focusAgentInstance.getInputActions()) {
+					Object result = patternAction.matches(currentInput, details);
+					if (result != null) {
+						if (patternAction.priority == Double.POSITIVE_INFINITY) {
+							currentInput = runInputAction(patternAction.action, currentInput, result);
+							if (currentInput == null) {
+								// done
+								return true;
+							} else {
+								// next called!
+								matching.clear();
+							}
 						} else {
-							matching.clear();
+							matching.add(scored([ patternAction.action, currentInput, result ], patternAction.priority));
 						}
-					} else {
-						matching.add(scored([ patternAction.action, currentInput, result ], patternAction.priority));
 					}
 				}
 			}
+		}
+		finally {
+			focusAgentInstance = null;
 		}
 		
 		// we didn't find a score=inf rule that didn't call next() yet
