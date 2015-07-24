@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.uds.lsv.platon.script
+package de.uds.lsv.platon.script;
 
 import groovy.time.TimeDuration
 import groovy.transform.InheritConstructors
@@ -52,7 +52,7 @@ class ScriptBindings {
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void scriptInitialAgent(Object identifier, Object... args) {
+	public void initialAgent(Object identifier, Object... args) {
 		if (!scriptAdapter.initializing) {
 			throw new RuntimeException("initialAgent can be used only as a top-level element.");
 		}
@@ -61,11 +61,11 @@ class ScriptBindings {
 			throw new RuntimeException("There can't be more than one initial agent!")
 		}
 		
-		scriptAdapter.initialAgent = scriptAgent(identifier, *args);
+		scriptAdapter.initialAgent = agent(identifier, *args);
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public Agent scriptAgent(Object agentIdentifier, Object... args) {
+	public Agent agent(Object agentIdentifier, Object... args) {
 		if (!scriptAdapter.initializing) {
 			throw new IllegalStateException("Top-level Blah");
 		}
@@ -127,24 +127,20 @@ class ScriptBindings {
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void scriptAfter(durationAndClosure) {
+	public void after(TimeDurationWithClosure durationWithClosure) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'after' as a top-level statement.");
 		}
 		
-		TimeDuration duration;
-		Closure closure;
-		(duration, closure) = durationAndClosure;
-		
-		if (duration.toMilliseconds() < 100) {
+		if (durationWithClosure.toMilliseconds() < 100) {
 			throw new RuntimeException("You cannot set timers for less than 100ms!");
 		}
 		
-		logger.debug("Submitting task to be run in ${duration}.")
+		logger.debug("Submitting task to be run in ${durationWithClosure}.")
 		AgentInstance agentInstance = scriptAdapter.agentStack.getActiveAgentInstance();
 		scriptAdapter.dialogEngine.getSession().schedule(
-			new AgentCallable(agentInstance, closure),
-			duration.toMilliseconds()
+			new AgentCallable(agentInstance, durationWithClosure.closure),
+			durationWithClosure.toMilliseconds()
 		);
 	}
 	
@@ -153,13 +149,16 @@ class ScriptBindings {
 	 * idle task, if used inside another statement (e.g. in an input block)
 	 * installs a idle task that's only used once, i.e. if there's input
 	 * between now and the idle timeout, the task is not run at all.
+	 * 
+	 * durationAndClosure is put together in the time definitions in ScriptAdapter.
 	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void scriptIdle(durationAndClosure) {
-		TimeDuration duration;
-		Closure closure;
-		(duration, closure) = durationAndClosure;
-		
+	public void idle(TimeDurationWithClosure durationWithClosure) {
+		idle(durationWithClosure, durationWithClosure.closure);
+	}
+	
+	@TypeChecked(TypeCheckingMode.SKIP)
+	public void idle(TimeDuration duration, Closure closure) {
 		if (duration.toMilliseconds() < 100) {
 			throw new RuntimeException("You cannot set idle times less than 100ms!");
 		}
@@ -171,7 +170,18 @@ class ScriptBindings {
 			AgentInstance agentInstance = scriptAdapter.agentStack.getActiveAgentInstance();
 			scriptAdapter.idleManager.addOnce(
 				duration.toMilliseconds(),
-				new AgentCallable(agentInstance, closure),
+				new AgentCallable(
+					agentInstance,
+					{
+						try {
+							closure();
+						}
+						catch (Exception e) {
+							logger.error(e);
+							throw scriptAdapter.exceptionMapper.translateException(e);
+						}
+					}
+				),
 				true
 			);
 		}
@@ -184,7 +194,7 @@ class ScriptBindings {
 	 *   language).
 	 * @param action
 	 */
-	public void scriptInput(
+	public def input(
 		a,
 		b,
 		c=null
@@ -208,7 +218,7 @@ class ScriptBindings {
 				action = (Closure)c;
 			}
 			
-			scriptInputInitializing(priority, languagePatterns, action);
+			inputInitializing(priority, languagePatterns, action);
 			
 		} else {
 			if (!(b instanceof Closure)) {
@@ -222,11 +232,11 @@ class ScriptBindings {
 			Closure action = (Closure)b;
 			Closure elseAction = (Closure)c;
 			
-			scriptInputRuntime(languagePatterns, action, elseAction);
+			return inputRuntime(languagePatterns, action, elseAction);
 		}
 	}
 	
-	private void scriptInputRuntime(
+	private PriorityInputAction inputRuntime(
 		languagePatterns,
 		Closure action,
 		Closure elseAction
@@ -242,8 +252,7 @@ class ScriptBindings {
 		Object patterns;
 		if (languagePatterns instanceof Map) {
 			if (!languagePatterns.containsKey(scriptAdapter.language)) {
-				logger.warn("Missing language ${scriptAdapter.language} in input ${languagePatterns}")
-				return;
+				throw new RuntimeException("Missing language ${scriptAdapter.language} in input ${languagePatterns}");
 			}
 			
 			patterns = languagePatterns[scriptAdapter.language];
@@ -266,9 +275,11 @@ class ScriptBindings {
 				Double.POSITIVE_INFINITY
 			)
 		);
+	
+		return scriptAdapter.getPriorityInputAction();
 	}
 	
-	private void scriptInputInitializing(
+	private void inputInitializing(
 		priority=true,
 		languagePatterns,
 		Closure action
@@ -333,7 +344,7 @@ class ScriptBindings {
 		}
 	}
 	
-	public void scriptObjectModified(Object fromObjectState, Closure toObjectState, Closure action) {
+	public void objectModified(Object fromObjectState, Closure toObjectState, Closure action) {
 		if (!(fromObjectState instanceof Closure || fromObjectState instanceof String)) {
 			throw new IllegalArgumentException("Invalid fromObjectState filter: " + fromObjectState);
 		}
@@ -354,7 +365,7 @@ class ScriptBindings {
 		agent.addObjectModifiedReaction((Closure)fromObjectState, toObjectState, action);
 	}
 
-	public void scriptObjectAdded(Object filter, Closure action) {
+	public void objectAdded(Object filter, Closure action) {
 		if (!(filter instanceof Closure || filter instanceof String)) {
 			throw new IllegalArgumentException("Invalid filter: " + filter);
 		}
@@ -375,7 +386,7 @@ class ScriptBindings {
 		agent.addObjectAddedReaction((Closure)filter, action);
 	}
 	
-	public void scriptObjectDeleted(Object filter, Closure action) {
+	public void objectDeleted(Object filter, Closure action) {
 		if (!(filter instanceof Closure || filter instanceof String)) {
 			throw new IllegalArgumentException("Invalid filter: " + filter);
 		}
@@ -394,7 +405,7 @@ class ScriptBindings {
 		agent.addObjectDeletedReaction((Closure)filter, action);
 	}
 	
-	public void scriptEnvironmentModified(String key, Object value, Closure action) {
+	public void environmentModified(String key, Object value, Closure action) {
 		logger.debug(String.format(
 			"Adding environmentModified reaction for %s => %s to agent %s",
 			key, value, agentUnderConstruction
@@ -413,7 +424,7 @@ class ScriptBindings {
 		}
 	}
 	
-	public void scriptReaction(String id, Closure action) {
+	public void reaction(String id, Closure action) {
 		if (!scriptAdapter.initializing) {
 			throw new RuntimeException("You can use 'reaction' only as a top-level statement.");
 		}
@@ -427,7 +438,7 @@ class ScriptBindings {
 		agentUnderConstruction.addNamedReaction(id, action);
 	}
 
-	public Then scriptTell(Map<String,Object> details=[:], Object addressee, Object textOrMap) {
+	public Then tell(Map<String,Object> details=[:], Object addressee, Object textOrMap) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'tell' as a top-level statement.");
 		}
@@ -478,7 +489,7 @@ class ScriptBindings {
 	}
 
 	// returns a collection of results
-	public Collection<WorldObjectWrapper> scriptObjects(Closure filter) {
+	public Collection<WorldObjectWrapper> objects(Closure filter) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'objects' as a top-level statement.");
 		}
@@ -501,7 +512,7 @@ class ScriptBindings {
 
 	// exactly one result or WrongNumberOfObjectsException
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public WorldObjectWrapper scriptObject(filter) throws WrongNumberOfObjectsException {
+	public WorldObjectWrapper object(filter) throws WrongNumberOfObjectsException {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'object' as a top-level statement.");
 		}
@@ -512,7 +523,7 @@ class ScriptBindings {
 			filter = { it.id == objectId };
 		}
 		
-		def allObjects = scriptObjects(filter);
+		def allObjects = objects(filter);
 		if (allObjects.isEmpty()) {
 			throw new WrongNumberOfObjectsException("Object filter yielded no results: " + originalFilter);
 		} else if (allObjects.size() > 1) {
@@ -522,7 +533,7 @@ class ScriptBindings {
 		return allObjects[0];
 	}
 	
-	public String scriptGetEnvironment(String key) {
+	public String getEnvironment(String key) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'getEnvironment' as a top-level statement.");
 		}
@@ -530,7 +541,7 @@ class ScriptBindings {
 		return scriptAdapter.dialogEngine.session.worldState.getEnvironmentVariable(key);
 	}
 	
-	public void scriptSetEnvironment(String key, String value) {
+	public void setEnvironment(String key, String value) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'setEnvironment' as a top-level statement.");
 		}
@@ -547,7 +558,7 @@ class ScriptBindings {
 		);
 	}
 	
-	public void scriptQuit() {
+	public void quit() {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'quit' as a top-level statement.");
 		}
@@ -558,7 +569,7 @@ class ScriptBindings {
 		);
 	}
 	
-	public void scriptNext(nextInput=null) {
+	public void next(nextInput=null) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'next' as a top-level statement.");
 		}
@@ -567,7 +578,7 @@ class ScriptBindings {
 		throw new NextThrowable(nextInput);
 	}
 	
-	public void scriptPrepareInput(Closure closure) {
+	public void prepareInput(Closure closure) {
 		if (!scriptAdapter.initializing) {
 			throw new IllegalStateException("You can use 'prepareInput' only as a top-level statement.");
 		}
@@ -575,20 +586,7 @@ class ScriptBindings {
 		scriptAdapter.prepareInput.add(closure);
 	}
 	
-	private static final Object noDefaultValue = new Object();
-	public Object scriptSelectTranslation(Map<String,Object> options, Object defaultValue=noDefaultValue) {
-		if (!options.containsKey(scriptAdapter.language)) {
-			if (!noDefaultValue.is(defaultValue)) {
-				return defaultValue;
-			} else {
-				throw new RuntimeException("No option for language ${scriptAdapter.language}!");
-			}
-		}
-		
-		return options.get(scriptAdapter.language);
-	}
-	
-	public void scriptInit(Closure closure) {
+	public void init(Closure closure) {
 		if (!scriptAdapter.initializing) {
 			throw new IllegalStateException("You can use 'init' only as a top-level statement.");
 		}
@@ -601,7 +599,7 @@ class ScriptBindings {
 	 * Pop an agent from the stack.
 	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void scriptExit(Object... args) {
+	public void exit(Object... args) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'exit' as a top-level statement.");
 		}
@@ -610,7 +608,7 @@ class ScriptBindings {
 		scriptAdapter.agentStack.popActive().enter(*args);
 	}
 	
-	public void scriptEnter(Closure closure) {
+	public void enter(Closure closure) {
 		if (!scriptAdapter.initializing) {
 			throw new IllegalStateException("You can use 'enter' only as a top-level statement.");
 		}
@@ -619,7 +617,7 @@ class ScriptBindings {
 		agentUnderConstruction.addEnter(closure);
 	}
 	
-	public void scriptDelegateAgent(Object agentIdentifier) {
+	public void delegateAgent(Object agentIdentifier) {
 		if (!scriptAdapter.initializing) {
 			throw new IllegalStateException("You can use 'delegateAgent' only as a top-level statement.");
 		}
@@ -645,14 +643,14 @@ class ScriptBindings {
 		agentUnderConstruction.addAgent(agent);
 	}
 	
-	public void scriptSend(User addressee, Object message) {
+	public void send(User addressee, Object message) {
 		scriptAdapter.dialogEngine.session.submit({
 			DialogEngine otherDialogEngine = scriptAdapter.dialogEngine.session.dialogEngines[addressee.id];
 			otherDialogEngine.sendInternal(scriptAdapter.dialogEngine, message);
 		});
 	}
 	
-	public void scriptInternal(priority=true, pattern, Closure action) {
+	public void internal(priority=true, pattern, Closure action) {
 		if (!scriptAdapter.initializing) {
 			throw new IllegalStateException("internal has to be a top-level statement!");
 		}

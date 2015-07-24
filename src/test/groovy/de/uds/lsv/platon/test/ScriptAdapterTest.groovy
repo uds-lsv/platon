@@ -1559,24 +1559,24 @@ public class ScriptAdapterTest extends Specification {
 			dialogEngine.getSession() >> session;
 			
 			def scriptAdapter = new ScriptAdapter(
-				new StringReader(
-					'if (!(2.milliseconds()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("2.milliseconds");\n' +
-					'if (!(2.seconds()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("2.seconds");\n' +
-					'if (!(2.minutes()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("2.minutes");\n' +
-					'if (!(2.hours()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("2.hours");\n' +
-					'if (!(1.millisecond()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("1.millisecond");\n' +
-					'if (!(1.second()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("1.second");\n' +
-					'if (!(1.minute()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("1.minute");\n' +
-					'if (!(1.hour()[0] instanceof groovy.time.TimeDuration)) throw new AssertionError("1.hour");\n' +
-					'if (17.milliseconds()[0].toMilliseconds() != 17) { throw new AssertionError("milliseconds"); }\n' +
-					'if (17.seconds()[0].toMilliseconds() != 17000) { throw new AssertionError("seconds"); }\n' +
-					'if (17.minutes()[0].toMilliseconds() != 1020000) { throw new AssertionError("minutes"); }\n' +
-					'if (17.hours()[0].toMilliseconds() != 61200000) { throw new AssertionError("hours"); }\n' +
-					'if (1.millisecond()[0].toMilliseconds() != 1) { throw new AssertionError("millisecond"); }\n' +
-					'if (1.second()[0].toMilliseconds() != 1000) { throw new AssertionError("second"); }\n' +
-					'if (1.minute()[0].toMilliseconds() != 60000) { throw new AssertionError("minute"); }\n' +
-					'if (1.hour()[0].toMilliseconds() != 3600000) { throw new AssertionError("hour"); }\n'
-				),
+				new StringReader("""
+					if (!(2.milliseconds instanceof groovy.time.TimeDuration)) { throw new AssertionError("2.milliseconds"); }
+					if (!(2.seconds instanceof groovy.time.TimeDuration)) { throw new AssertionError("2.seconds"); }
+					if (!(2.minutes instanceof groovy.time.TimeDuration)) { throw new AssertionError("2.minutes"); }
+					if (!(2.hours instanceof groovy.time.TimeDuration)) { throw new AssertionError("2.hours"); }
+					if (!(1.millisecond instanceof groovy.time.TimeDuration)) { throw new AssertionError("1.millisecond"); }
+					if (!(1.second instanceof groovy.time.TimeDuration)) { throw new AssertionError("1.second"); }
+					if (!(1.minute instanceof groovy.time.TimeDuration)) { throw new AssertionError("1.minute"); }
+					if (!(1.hour instanceof groovy.time.TimeDuration)) { throw new AssertionError("1.hour"); }
+					if (17.milliseconds.toMilliseconds() != 17) { throw new AssertionError("milliseconds"); }
+					if (17.seconds.toMilliseconds() != 17000) { throw new AssertionError("seconds"); }
+					if (17.minutes.toMilliseconds() != 1020000) { throw new AssertionError("minutes"); }
+					if (17.hours.toMilliseconds() != 61200000) { throw new AssertionError("hours"); }
+					if (1.millisecond.toMilliseconds() != 1) { throw new AssertionError("millisecond"); }
+					if (1.second.toMilliseconds() != 1000) { throw new AssertionError("second"); }
+					if (1.minute.toMilliseconds() != 60000) { throw new AssertionError("minute"); }
+					if (1.hour.toMilliseconds() != 3600000) { throw new AssertionError("hour"); }
+				"""),
 				null,
 				dialogEngine
 			);

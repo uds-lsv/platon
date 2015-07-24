@@ -62,6 +62,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	private GroovyScriptEngineImpl scriptEngine = null;
 	private URL scriptUrl = null;
 	ListenableBindings bindings;
+	ScriptBindings scriptBindings;
 	
 	List<Closure> prepareInput = new ArrayList<>();
 	
@@ -78,7 +79,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 
 	// Top priority input action that's executed before
 	// all agent actions
-	TwoCasePatternAction priorityInputAction = null;
+	private PriorityInputAction priorityInputAction = null;
 		
 	private ExceptionMapper exceptionMapper;
 	
@@ -190,7 +191,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		));
 		scriptEngine = (GroovyScriptEngineImpl)factory.getScriptEngine();
 		
-		ScriptBindings scriptBindings = new ScriptBindings(this);
+		scriptBindings = new ScriptBindings(this);
 		
 		bindings.put("bindings", bindings);
 		bindings.put("scriptAdapter", this);
@@ -199,47 +200,46 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		bindings.put("history", dialogEngine.history);
 		bindings.put("queue", dialogEngine.getActionQueueView());
 		
-		bindings.put("agent", scriptBindings.&scriptAgent);
-		bindings.put("initialAgent", scriptBindings.&scriptInitialAgent);
-		bindings.put("delegateAgent", scriptBindings.&scriptDelegateAgent);
-		bindings.put("exit", scriptBindings.&scriptExit);
+		bindings.put("agent", scriptBindings.&agent);
+		bindings.put("initialAgent", scriptBindings.&initialAgent);
+		bindings.put("delegateAgent", scriptBindings.&delegateAgent);
+		bindings.put("exit", scriptBindings.&exit);
 		
-		bindings.put("init", scriptBindings.&scriptInit);
-		bindings.put("enter", scriptBindings.&scriptEnter);
+		bindings.put("init", scriptBindings.&init);
+		bindings.put("enter", scriptBindings.&enter);
 		
-		bindings.put("prepareInput", scriptBindings.&scriptPrepareInput);
+		bindings.put("prepareInput", scriptBindings.&prepareInput);
 		
-		bindings.put("input", scriptBindings.&scriptInput);
+		bindings.put("input", scriptBindings.&input);
 		bindings.put("_", Wildcard.INSTANCE);
 		
-		bindings.put("tell", scriptBindings.&scriptTell);
+		bindings.put("tell", scriptBindings.&tell);
 		
 		bindings.put("users", dialogEngine.session.users);
 		bindings.put("player", addresseeUser);
 		bindings.put("user", addresseeUser);
 		bindings.put("all", addresseeAll);
 		
-		bindings.put("objectModified", scriptBindings.&scriptObjectModified);
-		bindings.put("objectAdded", scriptBindings.&scriptObjectAdded);
-		bindings.put("objectDeleted", scriptBindings.&scriptObjectDeleted);
-		bindings.put("environmentModified", scriptBindings.&scriptEnvironmentModified);
+		bindings.put("objectModified", scriptBindings.&objectModified);
+		bindings.put("objectAdded", scriptBindings.&objectAdded);
+		bindings.put("objectDeleted", scriptBindings.&objectDeleted);
+		bindings.put("environmentModified", scriptBindings.&environmentModified);
 		
-		bindings.put("objects", scriptBindings.&scriptObjects);
-		bindings.put("object", scriptBindings.&scriptObject);
+		bindings.put("objects", scriptBindings.&objects);
+		bindings.put("object", scriptBindings.&object);
 		
-		bindings.put("getenv", scriptBindings.&scriptGetEnvironment);
-		bindings.put("setenv", scriptBindings.&scriptSetEnvironment);
+		bindings.put("getenv", scriptBindings.&getEnvironment);
+		bindings.put("setenv", scriptBindings.&setEnvironment);
 		
-		bindings.put("reaction", scriptBindings.&scriptReaction);
-		bindings.put("after", scriptBindings.&scriptAfter);
-		bindings.put("idle", scriptBindings.&scriptIdle);
+		bindings.put("reaction", scriptBindings.&reaction);
+		bindings.put("after", scriptBindings.&after);
+		bindings.put("idle", scriptBindings.&idle);
 		
-		bindings.put("quit", scriptBindings.&scriptQuit);
-		bindings.put("next", scriptBindings.&scriptNext);
-		bindings.put("selectTranslation", scriptBindings.&scriptSelectTranslation);
+		bindings.put("quit", scriptBindings.&quit);
+		bindings.put("next", scriptBindings.&next);
 		
-		bindings.put("send", scriptBindings.&scriptSend);
-		bindings.put("internal", scriptBindings.&scriptInternal);
+		bindings.put("send", scriptBindings.&send);
+		bindings.put("internal", scriptBindings.&internal);
 		
 		// additional definitions
 		if (definitions != null) {
@@ -249,16 +249,17 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		
 		// for after 3.seconds { ... } etc.
-		scriptEngine.eval(
-			"Integer.metaClass.getMillisecond << { def value = delegate; if (value != 1) { logger.error(String.format('Grammar exception! Plural expected in »%d.millisecond«! ;)', delegate)); }\ndef duration = new groovy.time.TimeDuration(0, 0, 0, delegate); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getSecond << { if (delegate != 1) { logger.error(String.format('Grammar exception! Plural expected in »%d.second«! ;)', delegate)); }\ndef duration = new groovy.time.TimeDuration(0, 0, delegate, 0); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getMinute << { if (delegate != 1) { logger.error(String.format('Grammar exception! Plural expected in »%d.minute«! ;)', delegate)); }\ndef duration = new groovy.time.TimeDuration(0, delegate, 0, 0); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getHour << { if (delegate != 1) { logger.error(String.format('Grammar exception! Plural expected in »%d.hour«! ;)', delegate)); }\ndef duration = new groovy.time.TimeDuration(delegate, 0, 0, 0); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getMilliseconds << { def duration = new groovy.time.TimeDuration(0, 0, 0, delegate); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getSeconds << { def duration = new groovy.time.TimeDuration(0, 0, delegate, 0); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getMinutes << { def duration = new groovy.time.TimeDuration(0, delegate, 0, 0); { closure -> [ duration, closure ]} }\n" +
-			"Integer.metaClass.getHours << { def duration = new groovy.time.TimeDuration(delegate, 0, 0, 0); { closure -> [ duration, closure ]} }"
-		);
+		URL timeUrl = ScriptAdapter.class.getResource("/dsl/time.groovy");
+		if (timeUrl == null) {
+			throw new RuntimeException("Resource not found: /dsl/time.groovy");
+		}
+		Reader reader = new InputStreamReader(timeUrl.openStream());
+		try {
+			scriptEngine.eval(reader);
+		}
+		finally {
+			reader.close();
+		}
 		
 		this.exceptionMapper = new ExceptionMapper(script, scriptEngine.getClassLoader());
 		
@@ -731,5 +732,20 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	/*-----------------------------------------------------------------------------*/
 	public Agent getActiveAgent() {
 		return activeAgent;
+	}
+	
+	public PriorityInputAction getPriorityInputAction() {
+		return priorityInputAction;
+	} 
+	
+	public void setPriorityInputAction(TwoCasePatternAction action) {
+		this.priorityInputAction = (action == null) ? null : new PriorityInputAction(this, action);
+	}
+	
+	public void cancelPriorityInputAction(PriorityInputAction action) {
+		if (action != null && priorityInputAction != action) {
+			throw new IllegalStateException("Priority input action is not active: " + action + "\nActive priority input action: ");
+		}
+		setPriorityInputAction(null);
 	}
 }

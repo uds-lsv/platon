@@ -1,23 +1,13 @@
-/*
- * Copyright 2015, Spoken Language Systems Group, Saarland University.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 @groovy.transform.TypeChecked
 public class Stdlib {
 	private static Set<String> onceIdsAlreadyUsed = new HashSet<>();
-
+	
+	private final de.uds.lsv.platon.script.ScriptAdapter scriptAdapter;
+	 
+	public Stdlib(de.uds.lsv.platon.script.ScriptAdapter scriptAdapter) {
+		this.scriptAdapter = scriptAdapter;
+	}
+	
 	private static boolean classResolvable(String className) {
 		try {
 			Class.forName(className);
@@ -129,4 +119,60 @@ public class Stdlib {
 		}
 		f();
 	}
+	
+	private static final Object noDefaultValue = new Object();
+	
+	/**
+	 * Select the correct translation for the user's language from a map of
+	 * options.
+	 * 
+	 * @param options
+	 *   a Map language code -> translation
+	 */
+	public Object selectTranslation(Map<String,Object> options, Object defaultValue=noDefaultValue) {
+		if (!options.containsKey(scriptAdapter.language)) {
+			if (!noDefaultValue.is(defaultValue)) {
+				return defaultValue;
+			} else {
+				throw new RuntimeException("No option for language ${scriptAdapter.language}!");
+			}
+		}
+		
+		return options.get(scriptAdapter.language);
+	}
+	
+	/**
+	 * Wait for input.
+	 * If no input is registered during the timeout, run elseAction.
+	 * If an input is made but it does not match the patterns, run elseAction.
+	 * If a matching input is made, run action.
+	 * 
+	 * @param timeout
+	 * @param action
+	 * @param elseAction
+	 *   If no elseAction is specified or elseAction is null, action is used instead.
+	 */
+	public void waitForInput(
+		languagePatterns,
+		groovy.time.TimeDuration timeout,
+		Closure action,
+		Closure elseAction=null
+	) {
+		if (elseAction == null) {
+			elseAction = action;
+		}
+		
+		def priorityInputAction = scriptAdapter.scriptBindings.input(
+			languagePatterns,
+			action,
+			elseAction
+		);
+	
+		scriptAdapter.scriptBindings.idle(timeout) {
+			((de.uds.lsv.platon.script.PriorityInputAction)priorityInputAction).cancel();
+			elseAction.call();
+		}
+	}	
 }
+
+stdlib = new Stdlib(scriptAdapter);

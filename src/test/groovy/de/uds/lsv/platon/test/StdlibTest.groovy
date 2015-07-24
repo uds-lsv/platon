@@ -66,4 +66,108 @@ class StdlibTest extends TestImplBase {
 		where:
 			round << [ 1, 2 ]
 	}
+	
+	def testSelectTranslation() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input(~/ping/) {
+					tell player, stdlib.selectTranslation(
+						de: 'error',
+						en: 'pong',
+						fr: 'error'
+					);
+				}
+			""")
+		when:
+			input("ping");
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
+			0 * dialogClientMonitor.outputStart(_, _, _, _)
+	}
+	
+	def testSelectTranslationDefault() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input(~/ping/) {
+					tell player, stdlib.selectTranslation(
+						x: 'error',
+						y: 'error',
+						z: 'error',
+						'pong'
+					);
+				}
+			""")
+		when:
+			input("ping");
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
+			0 * dialogClientMonitor.outputStart(_, _, _, _)
+	}
+	
+	def testWaitForInputMatching() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input('ping') {
+					stdlib.waitForInput(
+						'pong',
+						1.second,
+						{ tell user, 'peng' },
+						{ tell user, 'error' }
+					);
+				}
+			""")
+		when:
+			input("ping");
+			input("pong");
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "peng", _)
+	}
+	
+	def testWaitForInputNotMatching() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input('ping') {
+					stdlib.waitForInput(
+						'blah',
+						1.second,
+						{ tell user, 'error' },
+						{ tell user, 'peng' }
+					);
+				}
+			""")
+		when:
+			input("ping");
+			input("pong");
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "peng", _)
+	}
+	
+	def testWaitForInputTimeout() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input('ping') {
+					stdlib.waitForInput(
+						'blah',
+						100.milliseconds,
+						{ tell user, 'error' },
+						{ tell user, 'peng' }
+					);
+				}
+			""")
+		when:
+			input("ping");
+			Thread.sleep(800);
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "peng", _)
+	}
 }

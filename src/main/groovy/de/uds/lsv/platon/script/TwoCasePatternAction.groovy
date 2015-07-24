@@ -44,6 +44,10 @@ public class TwoCasePatternAction extends PatternAction {
 		);
 	}
 	
+	public TwoCasePatternAction(TwoCasePatternAction other) {
+		this(other.pattern, other.action, other.elseAction, other.priority);
+	}
+	
 	@Override
 	public String toString() {
 		return String.format(

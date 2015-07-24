@@ -596,45 +596,6 @@ class EndToEndTest extends TestImplBase {
 			(timestamp - start) < 750000000L
 	}
 	
-	def testSelectTranslation() {
-		setup:
-			init(
-				"input(~/ping/) {\n" +
-				"  tell player, selectTranslation(\n" +
-				"    de: 'error',\n" +
-				"    en: 'pong',\n" +
-				"    fr: 'error'\n" +
-				"  )\n" +
-				"}\n"
-			)
-		when:
-			input("ping");
-			shutdownExecutors();
-		then:
-			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
-			0 * dialogClientMonitor.outputStart(_, _, _, _)
-	}
-	
-	def testSelectTranslationDefault() {
-		setup:
-			init(
-				"input(~/ping/) {\n" +
-				"  tell player, selectTranslation(\n" +
-				"    x: 'error',\n" +
-				"    y: 'error',\n" +
-				"    z: 'error',\n" +
-				"    'pong'" +
-				"  )\n" +
-				"}\n"
-			)
-		when:
-			input("ping");
-			shutdownExecutors();
-		then:
-			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
-			0 * dialogClientMonitor.outputStart(_, _, _, _)
-	}
-	
 	def testQueue() {
 		setup:
 			init(
