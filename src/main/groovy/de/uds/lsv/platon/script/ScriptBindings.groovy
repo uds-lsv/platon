@@ -21,13 +21,13 @@ import groovy.transform.InheritConstructors
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
-import java.util.Map.Entry
+import java.util.concurrent.Future
 import java.util.regex.Pattern
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import de.martingropp.util.PrimitiveUtil;
+import de.martingropp.util.PrimitiveUtil
 import de.uds.lsv.platon.action.Action
 import de.uds.lsv.platon.action.ModifyEnvironmentAction
 import de.uds.lsv.platon.action.QuitAction
@@ -127,7 +127,7 @@ class ScriptBindings {
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void after(TimeDurationWithClosure durationWithClosure) {
+	public CancellableJob after(TimeDurationWithClosure durationWithClosure) {
 		if (scriptAdapter.initializing) {
 			throw new IllegalStateException("You cannot use 'after' as a top-level statement.");
 		}
@@ -138,10 +138,16 @@ class ScriptBindings {
 		
 		logger.debug("Submitting task to be run in ${durationWithClosure}.")
 		AgentInstance agentInstance = scriptAdapter.agentStack.getActiveAgentInstance();
-		scriptAdapter.dialogEngine.getSession().schedule(
+		Future[] future = [ null ];
+		CancellableJob job = new CancellableJob(
 			new AgentCallable(agentInstance, durationWithClosure.closure),
+			{ future[0]?.cancel() }
+		);
+		future[0] = scriptAdapter.dialogEngine.getSession().schedule(
+			job,
 			durationWithClosure.toMilliseconds()
 		);
+		return job;
 	}
 	
 	/**
@@ -157,12 +163,12 @@ class ScriptBindings {
 	 *   to cancel the job.
 	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public IdleJob idle(TimeDurationWithClosure durationWithClosure) {
+	public CancellableJob idle(TimeDurationWithClosure durationWithClosure) {
 		return idle(durationWithClosure, durationWithClosure.closure);
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public IdleJob idle(TimeDuration duration, Closure closure) {
+	public CancellableJob idle(TimeDuration duration, Closure closure) {
 		if (duration.toMilliseconds() < 100) {
 			throw new RuntimeException("You cannot set idle times less than 100ms!");
 		}
@@ -173,7 +179,7 @@ class ScriptBindings {
 			return null;
 		} else {
 			AgentInstance agentInstance = scriptAdapter.agentStack.getActiveAgentInstance();
-			IdleJob job = new IdleJob(new AgentCallable(
+			CancellableJob job = new CancellableJob(new AgentCallable(
 				agentInstance,
 				{
 					try {

@@ -23,12 +23,13 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import de.martingropp.util.ReactionMap;
+import de.martingropp.util.ReactionMap
 import de.uds.lsv.platon.DialogClient
 import de.uds.lsv.platon.DialogWorld
 import de.uds.lsv.platon.action.IOType
@@ -179,10 +180,10 @@ public class DialogSession implements Closeable {
 	 * executed first.
 	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public synchronized void schedule(callable, long delayMilliseconds) {
+	public synchronized ScheduledFuture schedule(callable, long delayMilliseconds) {
 		logger.debug("Submission (scheduled: ${delayMilliseconds}ms) to session executor: " + callable);
 		executorShutdown = false;
-		executor.schedule(
+		return executor.schedule(
 			{
 				if (!isActive()) {
 					logger.debug("Not executing scheduled task " + callable + ": session already ended.")

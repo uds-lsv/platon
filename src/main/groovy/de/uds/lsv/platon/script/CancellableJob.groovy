@@ -16,12 +16,14 @@
 
 package de.uds.lsv.platon.script;
 
-public class IdleJob implements Runnable, Cancellable {
-	private boolean cancelled = false;
+public class CancellableJob implements Runnable, Cancellable {
+	private volatile boolean cancelled = false;
 	private final Object callable;
+	private final Object cancelCallable;
 	
-	public IdleJob(Object callable) {
+	public CancellableJob(Object callable, Object cancelCallable=null) {
 		this.callable = callable;
+		this.cancelCallable = cancelCallable;
 	}
 	
 	@Override
@@ -40,5 +42,8 @@ public class IdleJob implements Runnable, Cancellable {
 	@Override
 	public void cancel() {
 		cancelled = true;
+		if (cancelCallable != null) {
+			cancelCallable();
+		}
 	}
 }

@@ -203,8 +203,14 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			long startTime = -1L;
 			long duration = -1L; 
-			init(
-				"input(~/ping/){ setStartTime(); after 1.seconds { setEndTime() } }",
+			init("""
+				input(~/ping/) {
+					setStartTime();
+					after 1.seconds {
+						setEndTime()
+					}
+				}
+				""",
 				definitions: [
 					"setStartTime": { startTime = System.currentTimeMillis() },
 					"setEndTime": { duration = System.currentTimeMillis() - startTime },
@@ -218,6 +224,29 @@ class EndToEndTest extends TestImplBase {
 		then:
 			duration >= 1000L
 			duration < 1500L
+	}
+	
+	def testAfterCancel() {
+		setup:
+			long startTime = -1L;
+			long duration = -1L;
+			init("""
+				input(~/ping/) {
+					tell user, 'pong';
+					def job = after(
+						500.milliseconds,
+						{ tell user, 'error' }
+					);
+					job.cancel();
+				}
+			""");
+		when:
+			input("ping");
+			Thread.sleep(1500);
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
+			0 * dialogClientMonitor.outputStart(_, _, _, _)
 	}
 	
 	def testIdle() {
