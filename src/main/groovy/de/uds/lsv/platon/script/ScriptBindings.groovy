@@ -151,14 +151,18 @@ class ScriptBindings {
 	 * between now and the idle timeout, the task is not run at all.
 	 * 
 	 * durationAndClosure is put together in the time definitions in ScriptAdapter.
+	 * 
+	 * @return
+	 *   If idle is used at runtime, it returns a Cancellable object
+	 *   to cancel the job.
 	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void idle(TimeDurationWithClosure durationWithClosure) {
-		idle(durationWithClosure, durationWithClosure.closure);
+	public IdleJob idle(TimeDurationWithClosure durationWithClosure) {
+		return idle(durationWithClosure, durationWithClosure.closure);
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public void idle(TimeDuration duration, Closure closure) {
+	public IdleJob idle(TimeDuration duration, Closure closure) {
 		if (duration.toMilliseconds() < 100) {
 			throw new RuntimeException("You cannot set idle times less than 100ms!");
 		}
@@ -166,24 +170,27 @@ class ScriptBindings {
 		logger.debug("Adding idle task, ${duration}, once=${!scriptAdapter.initializing}.")
 		if (scriptAdapter.initializing) {
 			scriptAdapter.idleManager.add(duration.toMilliseconds(), closure);
+			return null;
 		} else {
 			AgentInstance agentInstance = scriptAdapter.agentStack.getActiveAgentInstance();
+			IdleJob job = new IdleJob(new AgentCallable(
+				agentInstance,
+				{
+					try {
+						closure();
+					}
+					catch (Exception e) {
+						logger.error(e);
+						throw scriptAdapter.exceptionMapper.translateException(e);
+					}
+				}
+			));
 			scriptAdapter.idleManager.addOnce(
 				duration.toMilliseconds(),
-				new AgentCallable(
-					agentInstance,
-					{
-						try {
-							closure();
-						}
-						catch (Exception e) {
-							logger.error(e);
-							throw scriptAdapter.exceptionMapper.translateException(e);
-						}
-					}
-				),
+				job,
 				true
 			);
+			return job;
 		}
 	}
 	

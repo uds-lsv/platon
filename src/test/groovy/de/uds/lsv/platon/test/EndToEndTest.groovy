@@ -596,6 +596,27 @@ class EndToEndTest extends TestImplBase {
 			(timestamp - start) < 750000000L
 	}
 	
+	def testIdleInInputCancel() {
+		setup:
+			init("""
+				input(~/ping/) {
+					tell player, 'pong';
+					def job = idle(
+						500.milliseconds,
+						{ tell player, 'peng' }
+					);
+					job.cancel();
+				}
+			""")
+		when:
+			input("ping");
+			Thread.sleep(1500);
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
+			0 * dialogClientMonitor.outputStart(_, _, _, _)
+	}
+	
 	def testQueue() {
 		setup:
 			init(

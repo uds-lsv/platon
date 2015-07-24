@@ -249,9 +249,9 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		
 		// for after 3.seconds { ... } etc.
-		URL timeUrl = ScriptAdapter.class.getResource("/dsl/time.groovy");
+		URL timeUrl = ScriptAdapter.class.getResource("/platon-dsl/time.groovy");
 		if (timeUrl == null) {
-			throw new RuntimeException("Resource not found: /dsl/time.groovy");
+			throw new RuntimeException("Resource not found: /platon-dsl/time.groovy");
 		}
 		Reader reader = new InputStreamReader(timeUrl.openStream());
 		try {
