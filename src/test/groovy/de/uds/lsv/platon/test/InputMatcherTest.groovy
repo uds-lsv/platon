@@ -20,7 +20,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputString() {
 		setup:
 			init(
-				"input('ping') { tell player, 'pong' }"
+				"input('ping') { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -33,7 +33,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputPattern() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -46,7 +46,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputClass() {
 		setup:
 			init(
-				"input(String) { tell player, 'pong' }"
+				"input(String) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -59,7 +59,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputWildcard() {
 		setup:
 			init(
-				"input(_) { tell player, 'pong' }"
+				"input(_) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -72,7 +72,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputClosure() {
 		setup:
 			init(
-				"input({ 'ping'.equals(it) }) { tell player, 'pong' }"
+				"input({ 'ping'.equals(it) }) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -91,7 +91,7 @@ class InputMatcherTest extends TestImplBase {
 					}
 				};
 				input(object) {
-					tell player, 'pong';
+					tell user, 'pong';
 				}
 			""")
 		when:
@@ -105,7 +105,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputOneOf() {
 		setup:
 			init(
-				"input(oneOf(Integer, 'ping', Boolean)) { tell player, 'pong' }"
+				"input(oneOf(Integer, 'ping', Boolean)) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");

@@ -89,7 +89,7 @@ public class ScriptAdapterTest extends Specification {
 		
 		where:
 			scriptStatement << [
-				"tell player, 'foo'",
+				"tell user, 'foo'",
 				"objects { it.type == 'foo' }",
 				"object { it.type == 'foo' }",
 			]
@@ -106,7 +106,7 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					"input(en:~/.*/){ tell player, it; }"
+					"input(en:~/.*/){ tell user, it; }"
 				),
 				null,
 				dialogEngine
@@ -135,8 +135,8 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					"input(en:~/A/){ tell player, it; }\n" +
-					"input(en:~/b/){ tell player, it; }"
+					"input(en:~/A/){ tell user, it; }\n" +
+					"input(en:~/b/){ tell user, it; }"
 				),
 				null,
 				dialogEngine
@@ -191,7 +191,7 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					"input(en: ~/.*/, de:  ~/.*/){ tell player, [ de: it, en: 'ERROR' ]; }"
+					"input(en: ~/.*/, de:  ~/.*/){ tell user, [ de: it, en: 'ERROR' ]; }"
 				),
 				null,
 				dialogEngine
@@ -220,8 +220,8 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					"input(en:~/A/){ tell player, 'A'; }\n" +
-					"input(en:~/B/){ tell player, 'B'; }"
+					"input(en:~/A/){ tell user, 'A'; }\n" +
+					"input(en:~/B/){ tell user, 'B'; }"
 				),
 				null,
 				dialogEngine
@@ -262,8 +262,8 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					"input(en: { it == 'A' }){ tell player, 'A'; }\n" +
-					"input(en: { it == 'B' }){ tell player, 'B'; }"
+					"input(en: { it == 'A' }){ tell user, 'A'; }\n" +
+					"input(en: { it == 'B' }){ tell user, 'B'; }"
 				),
 				null,
 				dialogEngine
@@ -304,7 +304,7 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					"input(en:~/A/){ tell player, 'ok'; }\n" +
+					"input(en:~/A/){ tell user, 'ok'; }\n" +
 					"input(en:~/B/){ tell all, 'ok'; }"
 				),
 				null,
@@ -1292,7 +1292,7 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					'def x = 0;\ninput(en:~/.*/){ x++; tell player, x }'
+					'def x = 0;\ninput(en:~/.*/){ x++; tell user, x }'
 				),
 				null,
 				dialogEngine
@@ -1333,7 +1333,7 @@ public class ScriptAdapterTest extends Specification {
 				new StringReader(
 					"x = 0;\n" +
 					"def inc() { x++ }\n" +
-					"input(en:~/.*/){ inc(); tell player, x }"
+					"input(en:~/.*/){ inc(); tell user, x }"
 				),
 				null,
 				dialogEngine
@@ -1372,8 +1372,8 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					'initialAgent agentA { def x = 0;\ninput(en:~/.*/){ x++; tell player, x; if (x > 1) agentB(); } }\n' +
-					'agent agentB { def x = 100;\ninput(en:~/.*/){ x++; tell player, x; agentA() } }'
+					'initialAgent agentA { def x = 0;\ninput(en:~/.*/){ x++; tell user, x; if (x > 1) agentB(); } }\n' +
+					'agent agentB { def x = 100;\ninput(en:~/.*/){ x++; tell user, x; agentA() } }'
 				),
 				null,
 				dialogEngine
@@ -1421,8 +1421,8 @@ public class ScriptAdapterTest extends Specification {
 			
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
-					'input(en: ~/unint/) { tell player, "unint", uninterruptible: true }\n' +
-					'input(en: ~/int/) { tell player, "int" }'
+					'input(en: ~/unint/) { tell user, "unint", uninterruptible: true }\n' +
+					'input(en: ~/int/) { tell user, "int" }'
 				),
 				null,
 				dialogEngine
@@ -1656,7 +1656,7 @@ public class ScriptAdapterTest extends Specification {
 			def scriptAdapter = new ScriptAdapter(
 				new StringReader(
 					"input(en:~/.*/) { next() }\n" +
-					"input(en:~/.*/) { tell player, 'pong' }"
+					"input(en:~/.*/) { tell user, 'pong' }"
 				),
 				null,
 				dialogEngine

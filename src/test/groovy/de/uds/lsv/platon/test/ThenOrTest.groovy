@@ -26,9 +26,9 @@ class ThenOrTest extends TestImplBase {
 				input(en:~/ping/) {
 					object('door1').open().then({
 						if (object('door1').isOpen) {
-							tell player, 'pong'
+							tell user, 'pong'
 						} else {
-							tell player, 'not open!'
+							tell user, 'not open!'
 						}
 					})
 				}
@@ -56,7 +56,7 @@ class ThenOrTest extends TestImplBase {
 	def testOr() {
 		setup:
 			init(
-				"input(en:~/ping/) { object({ it.id=='door1' }).open().or({ tell player, 'pong' }) }",
+				"input(en:~/ping/) { object({ it.id=='door1' }).open().or({ tell user, 'pong' }) }",
 				changeRequestModifyFails: true
 			)
 			addObject([
@@ -82,7 +82,7 @@ class ThenOrTest extends TestImplBase {
 	def testOrAndNotThen() {
 		setup:
 			init(
-				"input(en:~/ping/) { object('door1').open().or({ tell player, 'pong' }).then({ tell player, 'error' }); }",
+				"input(en:~/ping/) { object('door1').open().or({ tell user, 'pong' }).then({ tell user, 'error' }); }",
 				changeRequestModifyFails: true
 			)
 			addObject([
@@ -108,7 +108,7 @@ class ThenOrTest extends TestImplBase {
 	def testThenAndNotOr() {
 		setup:
 			init(
-				"input(en:~/ping/) { object('door1').open().or({ tell player, 'error' }).then({ tell player, 'pong' }); }"
+				"input(en:~/ping/) { object('door1').open().or({ tell user, 'error' }).then({ tell user, 'pong' }); }"
 			)
 			addObject([
 				(WorldObject.FIELD_TYPE): TestDoor.TYPE,
@@ -133,7 +133,7 @@ class ThenOrTest extends TestImplBase {
 	def testErrorHandlingThenError() {
 		setup:
 			init(
-				"input(en:~/ping/) { object({ it.id=='door1' }).open().then({ success, errorCode -> if (success) { tell player, 'error' } else { tell player, 'pong' } }) }",
+				"input(en:~/ping/) { object({ it.id=='door1' }).open().then({ success, errorCode -> if (success) { tell user, 'error' } else { tell user, 'pong' } }) }",
 				changeRequestModifyFails: true
 			)
 			addObject([
@@ -159,7 +159,7 @@ class ThenOrTest extends TestImplBase {
 	def testErrorHandlingThenNoError() {
 		setup:
 			init(
-				"input(en:~/ping/) { object({ it.id=='door1' }).open().then({ success, errorCode -> if (success) { tell player, 'pong' } else { tell player, 'error' } }) }"
+				"input(en:~/ping/) { object({ it.id=='door1' }).open().then({ success, errorCode -> if (success) { tell user, 'pong' } else { tell user, 'error' } }) }"
 			)
 			addObject([
 				(WorldObject.FIELD_TYPE): TestDoor.TYPE,

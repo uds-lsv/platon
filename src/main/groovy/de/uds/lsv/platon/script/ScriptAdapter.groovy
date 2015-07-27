@@ -217,7 +217,6 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		bindings.put("tell", scriptBindings.&tell);
 		
 		bindings.put("users", dialogEngine.session.users);
-		bindings.put("player", addresseeUser);
 		bindings.put("user", addresseeUser);
 		bindings.put("all", addresseeAll);
 		

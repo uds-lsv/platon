@@ -112,8 +112,8 @@ class BargeInTest extends Specification {
 	def testBargeIn() {
 		setup:
 			def script =
-				"input(en:~/A/) { tell player, 'AA'; }\n" +
-				"input(en:~/B/) { tell player, 'BB'; }";
+				"input(en:~/A/) { tell user, 'AA'; }\n" +
+				"input(en:~/B/) { tell user, 'BB'; }";
 		
 			Semaphore outputStartedSemaphore = new Semaphore(0);
 				
@@ -145,8 +145,8 @@ class BargeInTest extends Specification {
 	def testBargeInUninterruptible() {
 		setup:
 			def script =
-				"input(en:~/A/) { tell player, 'AA', uninterruptible: true }\n" +
-				"input(en:~/B/) { tell player, 'BB'; }";
+				"input(en:~/A/) { tell user, 'AA', uninterruptible: true }\n" +
+				"input(en:~/B/) { tell user, 'BB'; }";
 		
 			def outputStartedSemaphore = new Semaphore(0);
 				

@@ -117,8 +117,8 @@ class AgentTest extends TestImplBase {
 	def testAgentInit() {
 		setup:
 			init(
-				"initialAgent agentA { init { tell player, 'ping', uninterruptible: true; agentB(); } }\n" +
-				"agent agentB { init { tell player, 'pong', uninterruptible: true; } }",
+				"initialAgent agentA { init { tell user, 'ping', uninterruptible: true; agentB(); } }\n" +
+				"agent agentB { init { tell user, 'pong', uninterruptible: true; } }",
 				setActive: false
 			)
 		when:
@@ -135,17 +135,17 @@ class AgentTest extends TestImplBase {
 	def testAgentStack() {
 		setup:
 			init(
-				"init { tell player, 'init', uninterruptible: true; }\n" +
+				"init { tell user, 'init', uninterruptible: true; }\n" +
 				"initialAgent agentA {\n" +
-				"  init { tell player, 'initA', uninterruptible: true; agentB(); }\n" +
+				"  init { tell user, 'initA', uninterruptible: true; agentB(); }\n" +
 				"}\n" +
 				"agent agentB {\n" +
-				"  init { tell player, 'initB', uninterruptible: true; agentC(); }\n" +
-				"  input(~/ping/) { tell player, 'peng', uninterruptible: true; exit(); }\n" +
+				"  init { tell user, 'initB', uninterruptible: true; agentC(); }\n" +
+				"  input(~/ping/) { tell user, 'peng', uninterruptible: true; exit(); }\n" +
 				"}\n" +
 				"agent agentC {\n" +
-				"  init { tell player, 'initC', uninterruptible: true; }\n" +
-				"  input(~/ping/) { tell player, 'pong', uninterruptible: true; exit(); }\n" +
+				"  init { tell user, 'initC', uninterruptible: true; }\n" +
+				"  input(~/ping/) { tell user, 'pong', uninterruptible: true; exit(); }\n" +
 				"}",
 				setActive: false
 			)
@@ -178,12 +178,12 @@ class AgentTest extends TestImplBase {
 	def testEnter() {
 		setup:
 			init(
-				"enter { tell player, 'main' }\n" +
+				"enter { tell user, 'main' }\n" +
 				"initialAgent agentA {\n" +
-				"  enter { tell player, 'a', uninterruptible: true; }\n" +
+				"  enter { tell user, 'a', uninterruptible: true; }\n" +
 				"  input(~/ping/) { agentB() }" +
 				"}\n" +
-				"agent agentB { enter { tell player, 'b', uninterruptible: true; exit(); } }",
+				"agent agentB { enter { tell user, 'b', uninterruptible: true; exit(); } }",
 				setActive: false
 			)
 		when:
@@ -204,7 +204,7 @@ class AgentTest extends TestImplBase {
 	def testEnterMain() {
 		setup:
 			init(
-				"enter { tell player, 'main' }\n" +
+				"enter { tell user, 'main' }\n" +
 				"initialAgent agentA {\n" +
 				"  enter { exit() }\n" +
 				"}\n",
@@ -228,7 +228,7 @@ class AgentTest extends TestImplBase {
 				"  init { agentB() }\n" +
 				"}\n" +
 				"agent agentB {\n" +
-				"  init { tell player, 'pong', uninterruptible: true; }\n" +
+				"  init { tell user, 'pong', uninterruptible: true; }\n" +
 				"}",
 				setActive: false
 			)
@@ -248,7 +248,7 @@ class AgentTest extends TestImplBase {
 				"  enter { agentB.push() }\n" +
 				"}\n" +
 				"agent agentB {\n" +
-				"  enter { tell player, 'pong', uninterruptible: true; }\n" +
+				"  enter { tell user, 'pong', uninterruptible: true; }\n" +
 				"}",
 				setActive: false
 			)
@@ -268,7 +268,7 @@ class AgentTest extends TestImplBase {
 				"  init { agentB(it) }\n" +
 				"}\n" +
 				"agent agentB {\n" +
-				"  init { tell player, it }\n" +
+				"  init { tell user, it }\n" +
 				"}",
 				setActive: false
 			)
@@ -285,7 +285,7 @@ class AgentTest extends TestImplBase {
 			init(
 				"init { agentA.push('ping') }\n" +
 				"agent agentA {\n" +
-				"  init { tell player, it }\n" +
+				"  init { tell user, it }\n" +
 				"}",
 				setActive: false
 			)
@@ -302,7 +302,7 @@ class AgentTest extends TestImplBase {
 			init(
 				"initialAgent agent0 { init { agent1.replace('ping') } }\n" +
 				"agent agent1 {\n" +
-				"  init { tell player, it }\n" +
+				"  init { tell user, it }\n" +
 				"}",
 				setActive: false
 			)
@@ -321,7 +321,7 @@ class AgentTest extends TestImplBase {
 				"  def value = 'error';\n" +
 				"  init { value = 'ping'; agentB.push() }\n" +
 				"  agent agentB {\n" +
-				"    init { tell player, value }\n" +
+				"    init { tell user, value }\n" +
 				"  }\n" +
 				"}",
 				setActive: false
