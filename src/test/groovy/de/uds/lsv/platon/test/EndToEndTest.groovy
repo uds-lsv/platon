@@ -31,7 +31,7 @@ class EndToEndTest extends TestImplBase {
 	def testInputGeneral() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -47,7 +47,7 @@ class EndToEndTest extends TestImplBase {
 	def testOutputSimple() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -63,7 +63,7 @@ class EndToEndTest extends TestImplBase {
 	def testOutputGeneral() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -175,7 +175,7 @@ class EndToEndTest extends TestImplBase {
 	def testUnhandledErrorReaction() {
 		setup:
 			init(
-				"reaction('main:unhandled error') { tell player, it }\n" +
+				"reaction('main:unhandled error') { tell user, it }\n" +
 				"input(~/ping/) { object({ it.id=='door1' }).open() }",
 				changeRequestModifyFails: true
 			)
@@ -276,10 +276,10 @@ class EndToEndTest extends TestImplBase {
 	/**
 	 * Test base agent init.
 	 */
-	def testGameStarted() {
+	def testInit() {
 		setup:
 			init(
-				"init { tell player, 'game started'; }",
+				"init { tell user, 'init'; }",
 				setActive: false
 			);
 		
@@ -287,16 +287,16 @@ class EndToEndTest extends TestImplBase {
 			session.setActive(true);
 			shutdownExecutors();
 		then:
-			1 * dialogClientMonitor.outputStart(_, _, "game started", _)
+			1 * dialogClientMonitor.outputStart(_, _, "init", _)
 	}
 
 	/**
-	 * Test reaction("main:game started") when session is activated twice.
+	 * Test base agent init when session is activated twice.
 	 */
-	def testGameStartedTwice() {
+	def testInitTwice() {
 		setup:
 			init(
-				"init { tell player, 'game started'; }",
+				"init { tell user, 'init'; }",
 				setActive: false
 			);
 		
@@ -305,7 +305,7 @@ class EndToEndTest extends TestImplBase {
 			session.setActive(true);
 			shutdownExecutors();
 		then:
-			1 * dialogClientMonitor.outputStart(_, _, "game started", _)
+			1 * dialogClientMonitor.outputStart(_, _, "init", _)
 	}
 	
 	/**
@@ -314,7 +314,7 @@ class EndToEndTest extends TestImplBase {
 	def testGameStopped() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			);
 		
 		when:
@@ -327,7 +327,7 @@ class EndToEndTest extends TestImplBase {
 	def testGetEnv() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, getenv('foo') }"
+				"input(~/ping/) { tell user, getenv('foo') }"
 			);
 			worldState.getEnvironmentVariables().put("foo", "pong");
 	
@@ -373,7 +373,7 @@ class EndToEndTest extends TestImplBase {
 			init(
 				"x = '1';\n" +
 				"def f() { return x; }\n" +
-				"input(~/ping/) { x = '2'; tell player, f(); }"
+				"input(~/ping/) { x = '2'; tell user, f(); }"
 			)
 		when:
 			input("ping");
@@ -388,7 +388,7 @@ class EndToEndTest extends TestImplBase {
 			init(
 				"def x = 1;\n" +
 				"x += 1;\n" +
-				"input(~/ping/) { tell player, Integer.toString(x); }"
+				"input(~/ping/) { tell user, Integer.toString(x); }"
 			)
 		when:
 			input("ping");
@@ -403,7 +403,7 @@ class EndToEndTest extends TestImplBase {
 			init(
 				"@groovy.transform.Field def x = 1;\n" +
 				"x += 1;\n" +
-				"input(~/ping/) { tell player, Integer.toString(x); }"
+				"input(~/ping/) { tell user, Integer.toString(x); }"
 			)
 		when:
 			input("ping");
@@ -419,7 +419,7 @@ class EndToEndTest extends TestImplBase {
 				"@groovy.transform.Field def x = 1;\n" +
 				"def f() { return x; }\n" +
 				"x += 1;\n" +
-				"input(~/ping/) { tell player, Integer.toString(f()); }"
+				"input(~/ping/) { tell user, Integer.toString(f()); }"
 			)
 		when:
 			input("ping");
@@ -435,7 +435,7 @@ class EndToEndTest extends TestImplBase {
 				"@groovy.transform.Field def x = 1;\n" +
 				"def f() { return x; }\n" +
 				"{ -> this.@x++; }();\n" +
-				"input(~/ping/) { tell player, Integer.toString(f()); }"
+				"input(~/ping/) { tell user, Integer.toString(f()); }"
 			)
 		when:
 			input("ping");
@@ -450,7 +450,7 @@ class EndToEndTest extends TestImplBase {
 			init(
 				"def x = 1;\n" +
 				"{ -> x++; }();\n" +
-				"input(~/ping/) { tell player, Integer.toString(x); }"
+				"input(~/ping/) { tell user, Integer.toString(x); }"
 			)
 		when:
 			input("ping");
@@ -467,7 +467,7 @@ class EndToEndTest extends TestImplBase {
 				"def f() { return x; }\n" +
 				"input(~/ping/) { x = 2; }\n" +
 				"input(~/pong/) { x = 3; }\n" +
-				"input(~/peng/) { tell player, Integer.toString(f()); }"
+				"input(~/peng/) { tell user, Integer.toString(f()); }"
 			)
 		when:
 			input("ping");
@@ -485,7 +485,7 @@ class EndToEndTest extends TestImplBase {
 	def testHistory() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'pong' }\n" +
+				"input(~/ping/) { tell user, 'pong' }\n" +
 				"input(~/peng/) { println history }\n"
 			)
 			
@@ -509,7 +509,7 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init(
 				"prepareInput { return 'p' + it }\n" +
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			)
 		when:
 			input("ing");
@@ -523,12 +523,12 @@ class EndToEndTest extends TestImplBase {
 	def testPrepareInputWithStates() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'ERROR' }\n" +
+				"input(~/ping/) { tell user, 'ERROR' }\n" +
 				"initialState('test') {\n" +
 				"  prepareInput { return 'p' + it }\n" +
-				"  input(~/ping/) { tell player, 'pong' }\n" +
+				"  input(~/ping/) { tell user, 'pong' }\n" +
 				"}\n" +
-				"input(~/ping/) { tell player, 'ERROR' }"
+				"input(~/ping/) { tell user, 'ERROR' }"
 			)
 		when:
 			input("ing");
@@ -541,10 +541,10 @@ class EndToEndTest extends TestImplBase {
 	def testPrepareInputMainWithStates() {
 		setup:
 			init(
-				"input(~/ping/) { tell player, 'ERROR' }\n" +
+				"input(~/ping/) { tell user, 'ERROR' }\n" +
 				"prepareInput { return 'p' + it }\n" +
 				"initialState('test') {\n" +
-				"  input(~/ping/) { tell player, 'pong' }\n" +
+				"  input(~/ping/) { tell user, 'pong' }\n" +
 				"}\n" +
 				"prepareInput { return 'ERROR' }"
 			)
@@ -561,7 +561,7 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init(
 				"input({ text, details -> details.values().find() }) {\n" +
-				"  text, result -> tell player, result;\n" +
+				"  text, result -> tell user, result;\n" +
 				"}"
 			)
 		when:
@@ -576,7 +576,7 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init(
 				"prepareInput { text, details -> details.values().find() }\n" +
-				"input(~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell user, 'pong' }"
 			)
 		when:
 			input("blah", [ "foo": "ping" ]);
@@ -590,7 +590,7 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init(
 				"input(~/ping/) {\n" +
-				"  idle 500.milliseconds { tell player, 'pong' }\n" +
+				"  idle 500.milliseconds { tell user, 'pong' }\n" +
 				"}\n"
 			)
 		when:
@@ -629,10 +629,10 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init("""
 				input(~/ping/) {
-					tell player, 'pong';
+					tell user, 'pong';
 					def job = idle(
 						500.milliseconds,
-						{ tell player, 'peng' }
+						{ tell user, 'peng' }
 					);
 					job.cancel();
 				}
@@ -650,10 +650,10 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init(
 				"input(~/ping/) {\n" +
-				"  tell player, 'pong';\n" +
-				"  tell player, 'peng';\n" +
+				"  tell user, 'pong';\n" +
+				"  tell user, 'peng';\n" +
 				"  if (queue.last().text == 'peng') {\n" +
-				"    tell player, 'pung';\n" +
+				"    tell user, 'pung';\n" +
 				"  }\n" +
 				"}"
 			)
@@ -674,8 +674,8 @@ class EndToEndTest extends TestImplBase {
 	def testInputClosureArgumentTypes() {
 		setup:
 			init(
-				"input({ Double x -> true }) { tell player, 'error' }\n" +
-				"input(~/.*/) { tell player, 'pong' }"
+				"input({ Double x -> true }) { tell user, 'error' }\n" +
+				"input(~/.*/) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -688,7 +688,7 @@ class EndToEndTest extends TestImplBase {
 	def testMainInit() {
 		setup:
 			init(
-				"init { tell player, 'ping', uninterruptible: true }",
+				"init { tell user, 'ping', uninterruptible: true }",
 				setActive: false
 			)
 		when:
@@ -702,7 +702,7 @@ class EndToEndTest extends TestImplBase {
 	def testInputWildcard() {
 		setup:
 			init(
-				"input(_) { tell player, 'pong' }"
+				"input(_) { tell user, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -716,7 +716,7 @@ class EndToEndTest extends TestImplBase {
 		setup:
 			init(
 				"input('ping') { next('pong') }\n" +
-				"input('pong') { tell player, it }"
+				"input('pong') { tell user, it }"
 			)
 		when:
 			input("ping");
@@ -729,8 +729,8 @@ class EndToEndTest extends TestImplBase {
 	def testDefaultWorldObject() {
 		setup:
 			init(
-				"input('ping') { def obj = object('test'); tell player, obj.message, uninterruptible: true; }\n" +
-				"input('pong') { def obj = object('test'); tell player, obj.type, uninterruptible: true; }"
+				"input('ping') { def obj = object('test'); tell user, obj.message, uninterruptible: true; }\n" +
+				"input('pong') { def obj = object('test'); tell user, obj.type, uninterruptible: true; }"
 			)
 			addObject([
 				(WorldObject.FIELD_TYPE): "some type",

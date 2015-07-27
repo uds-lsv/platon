@@ -46,6 +46,22 @@ public class PatternAction implements Comparable<PatternAction> {
 	 *   != null if input is accepted.
 	 */
 	public Object matches(Object input, Object details=null) {
+		return doesMatch(pattern, input, details);
+	}
+	
+	private static Object doesMatch(Object pattern, Object input, Object details) {
+		// OneOf
+		if (pattern instanceof OneOf) {
+			for (Object pattern2 : (OneOf)pattern) {
+				def result = doesMatch(pattern2, input, details);
+				if (result != null) {
+					return result;
+				}
+			}
+			
+			return null;
+		}
+		
 		// Wildcard
 		if (Wildcard.INSTANCE.is(pattern)) {
 			logger.debug(String.format("Accepted »%s«: wildcard", input));

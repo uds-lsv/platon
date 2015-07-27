@@ -50,8 +50,8 @@ import de.uds.lsv.platon.world.WorldState.ModifyListener
 public class ScriptAdapter implements AddListener, ModifyListener, DeleteListener, ReactionTrigger, EnvironmentListener, SessionActiveListener, FallbackListener {
 	private static final Log logger = LogFactory.getLog(ScriptAdapter.class.getName());
 	
-	public static final String NAMED_REACTION_STARTED = "main:game started";
-	public static final String NAMED_REACTION_STOPPED = "main:game stopped";
+	//public static final String NAMED_REACTION_STARTED = "main:started";
+	//public static final String NAMED_REACTION_STOPPED = "main:stopped";
 		
 	Object addresseeUser;
 	final Object addresseeAll = "all";
@@ -212,6 +212,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		
 		bindings.put("input", scriptBindings.&input);
 		bindings.put("_", Wildcard.INSTANCE);
+		bindings.put("oneOf", scriptBindings.&oneOf);
 		
 		bindings.put("tell", scriptBindings.&tell);
 		
@@ -388,14 +389,14 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 					}
 				}
 				
-				logger.debug("prepareInput: »${preparedInputs}« => »${newInputs}«")
+				logger.debug("prepareInput: »" + preparedInputs + "« => »" + newInputs + "«");
 				preparedInputs = newInputs;
 			}
 			
 			// handle prepared parts
 			for (Object currentInput : preparedInputs) {
 				if (!handlePreparedInput(currentInput, details)) {
-					logger.debug("Script can not handle input »${input}« (prepared: ${currentInput}). State stack: »${agentStack}«.");
+					logger.debug("Script can not handle input »" + input + "« (prepared: " + currentInput + "). State stack: »" + agentStack + "«.");
 					return false;
 				}
 			}
@@ -701,7 +702,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 			logger.debug("Session activated.");
 			idleManager.start();
 			
-			triggerNamedReaction(NAMED_REACTION_STARTED);
+			//triggerNamedReaction(NAMED_REACTION_STARTED);
 			
 			if (!initRun) {
 				initRun = true;
@@ -715,7 +716,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		} else {
 			logger.debug("Session paused.");
 			idleManager.pause();
-			triggerNamedReaction(NAMED_REACTION_STOPPED);
+			//triggerNamedReaction(NAMED_REACTION_STOPPED);
 		}
 	}
 		

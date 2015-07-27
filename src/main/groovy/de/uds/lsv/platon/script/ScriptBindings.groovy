@@ -262,26 +262,21 @@ class ScriptBindings {
 		
 		assert (scriptAdapter.focusAgentInstance != null);
 		
-		Object patterns;
+		Object pattern;
 		if (languagePatterns instanceof Map) {
 			if (!languagePatterns.containsKey(scriptAdapter.language)) {
 				throw new RuntimeException("Missing language ${scriptAdapter.language} in input ${languagePatterns}");
 			}
 			
-			patterns = languagePatterns[scriptAdapter.language];
+			pattern = languagePatterns[scriptAdapter.language];
 		
 		} else {
-			patterns = languagePatterns;
-		}
-		
-		if (patterns instanceof Iterable) {
-			// TODO
-			throw new RuntimeException("Iterable patterns not supported in runtime input statements at the moment.")
+			pattern = languagePatterns;
 		}
 		
 		scriptAdapter.setPriorityInputAction(
 			new TwoCasePatternAction(
-				patterns,
+				pattern,
 				scriptAdapter.focusAgentInstance,
 				action,
 				elseAction,
@@ -307,54 +302,31 @@ class ScriptBindings {
 			doublePriority = (Double)priority;
 		}
 		
-		Object patterns;
+		Object pattern;
 		if (languagePatterns instanceof Map) {
 			if (!languagePatterns.containsKey(scriptAdapter.language)) {
 				logger.warn("Missing language ${scriptAdapter.language} in input ${languagePatterns}")
 				return;
 			}
 			
-			patterns = languagePatterns[scriptAdapter.language];
+			pattern = languagePatterns[scriptAdapter.language];
 		
 		} else {
-			patterns = languagePatterns;
+			pattern = languagePatterns;
 		}
-		
-		if (patterns instanceof Iterable) {
-			for (pattern in patterns) {
-				logger.debug("Adding action for ${pattern.toString()} to agent ${agentUnderConstruction}");
-			
-				if (pattern == null) {
-					throw new IllegalArgumentException("Pattern cannot be null!");
-				} else if (
-					scriptAdapter.dialogEngine.session.config.caseInsensitiveInputPatterns &&
-					pattern instanceof Pattern
-				) {
-					pattern = Pattern.compile(
-						((Pattern)pattern).pattern(),
-						Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE
-					);
-				}
-			
-				agentUnderConstruction.addInputAction(pattern, action, doublePriority);
-			}
-		
-		} else {
-			def pattern = patterns;
-			
-			logger.debug("Adding action for ${pattern.toString()} to agent ${agentUnderConstruction}");
+				
+		logger.debug("Adding action for ${pattern.toString()} to agent ${agentUnderConstruction}");
 
-			if (pattern == null) {
-				throw new IllegalArgumentException("Pattern cannot be null!");
-			} else if (
-				scriptAdapter.dialogEngine.session.config.caseInsensitiveInputPatterns &&
-				pattern instanceof Pattern
-			) {
-				pattern = Pattern.compile(pattern.pattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-			}
-			
-			agentUnderConstruction.addInputAction(pattern, action, doublePriority);
+		if (pattern == null) {
+			throw new IllegalArgumentException("Pattern cannot be null!");
+		} else if (
+			scriptAdapter.dialogEngine.session.config.caseInsensitiveInputPatterns &&
+			pattern instanceof Pattern
+		) {
+			pattern = Pattern.compile(pattern.pattern(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 		}
+		
+		agentUnderConstruction.addInputAction(pattern, action, doublePriority);
 	}
 	
 	public void objectModified(Object fromObjectState, Closure toObjectState, Closure action) {
@@ -676,5 +648,9 @@ class ScriptBindings {
 		}
 		
 		agentUnderConstruction.addIntercomAction(pattern, action, ((Number)priority).doubleValue());
+	}
+	
+	public OneOf oneOf(Object... things) {
+		return new OneOf(Arrays.asList(things));
 	}
 }

@@ -33,7 +33,7 @@ class InputMatcherTest extends TestImplBase {
 	def testInputPattern() {
 		setup:
 			init(
-				"input(en:~/ping/) { tell player, 'pong' }"
+				"input(~/ping/) { tell player, 'pong' }"
 			)
 		when:
 			input("ping");
@@ -84,14 +84,16 @@ class InputMatcherTest extends TestImplBase {
 	
 	def testInputObject() {
 		setup:
-			init(
-				"object = new Object() {\n" +
-				"  public boolean equals(Object other) {\n" +
-				"    return 'ping'.equals(other);\n" +
-				"  }\n" +
-				"};\n" +
-				"input({ 'ping'.equals(it) }) { tell player, 'pong' }"
-			)
+			init("""
+				object = new Object() {
+					public boolean equals(Object other) {
+						return 'ping'.equals(other);
+					}
+				};
+				input(object) {
+					tell player, 'pong';
+				}
+			""")
 		when:
 			input("ping");
 			shutdownExecutors();
@@ -100,10 +102,10 @@ class InputMatcherTest extends TestImplBase {
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
 	}
 	
-	def testInputList() {
+	def testInputOneOf() {
 		setup:
 			init(
-				"input([ 'ping', String ]) { tell player, 'pong' }"
+				"input(oneOf(Integer, 'ping', Boolean)) { tell player, 'pong' }"
 			)
 		when:
 			input("ping");
