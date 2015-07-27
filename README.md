@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/uds-lsv/platon.svg?branch=master)](https://travis-ci.org/uds-lsv/platon)
+
 Platon
 ======
 
