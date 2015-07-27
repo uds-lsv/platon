@@ -111,4 +111,9 @@ public class Config {
 	 * for VerbalOutputActions.
 	 */
 	public long verbalActionTimeoutMillis = 25000l;
+	
+	/**
+	 * Don't interrupt the current output when the user starts speaking.
+	 */
+	public boolean disableBargeIn = false;
 }

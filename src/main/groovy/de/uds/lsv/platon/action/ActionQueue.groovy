@@ -108,6 +108,10 @@ public class ActionQueue {
 	public synchronized void bargeIn() {
 		// remove all (verbal) actions from the queue that don't
 		// have uninterruptible set
+		if (dialogEngine.session.config.disableBargeIn) {
+			return;
+		}
+		
 		logger.trace("Barge-in? Checking queue...");
 		if (!queue.isEmpty()) {
 			def remaining = queue.findAll { it.uninterruptible };

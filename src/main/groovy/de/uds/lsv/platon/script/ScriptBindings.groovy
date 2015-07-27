@@ -254,7 +254,7 @@ class ScriptBindings {
 		Closure action,
 		Closure elseAction
 	) {
-		logger.debug("Runtime input statement: languagePatterns: ${languagePatterns} action: ${action} elseAction: ${elseAction}");
+		logger.debug("Runtime input statement: languagePatterns: " + languagePatterns + " action: " + action + " elseAction: " + elseAction);
 	
 		if (scriptAdapter.priorityInputAction != null) {
 			throw new RuntimeException("There can be only one priority input action! Existing: " + scriptAdapter.priorityInputAction);

@@ -64,7 +64,7 @@ public class VerbalOutputAction extends Action {
 		session.submit({
 			synchronized(this) {
 				if (!aborted && session.isActive()) {
-					logger.debug("Executing " + this);
+					logger.debug("Executing " + this + " (" + System.identityHashCode(this) + ")");
 					outputId = session.getDialogClient().outputStart(
 						user,
 						type,

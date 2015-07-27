@@ -320,8 +320,9 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	private Object runInputAction(AgentCallable action, Object input, Object other) {
 		for (;;) {
 			try {
-				def result;
-				if (action.getMaximumNumberOfParameters() == 1) {
+				if (action.getMaximumNumberOfParameters() == 0) {
+					action();
+				} else if (action.getMaximumNumberOfParameters() == 1) {
 					action(input);
 				} else {
 					action(input, other);

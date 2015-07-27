@@ -42,6 +42,7 @@ public class AgentCallable {
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public def call(Object... args) {
+		println "call " + this;
 		AgentInstance agentInstance = agentInstance.get();
 		if (agentInstance == null || !agentInstance.isActive()) {
 			logger.debug("The agent instance belonging to ${this} is no longer active and has been garbage-collected -- not running.");

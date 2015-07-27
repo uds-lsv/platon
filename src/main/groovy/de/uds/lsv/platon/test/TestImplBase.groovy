@@ -64,10 +64,15 @@ public class TestImplBase extends Specification {
 	private void doInit(Map kwargs=[:]) {
 		TestEnvironment.registerTypes();
 		
+		config.disableBargeIn = kwargs.get("disableBargeIn", true);
+		
 		config.wrapExceptions = kwargs.get("wrapExceptions", false);
 		config.scriptDefinitions = kwargs.get("definitions", [:]);
 		
-		config.serverExceptionHandler = (Closure)kwargs.get("serverExceptionHandler", null);
+		config.serverExceptionHandler = (Closure)kwargs.get(
+			"serverExceptionHandler",
+			{ e -> throw e }
+		);
 		users = createUsers(kwargs.get("numUsers", 1));
 		dialogClient = createDialogClient()
 		dialogWorld = createDialogWorld(
