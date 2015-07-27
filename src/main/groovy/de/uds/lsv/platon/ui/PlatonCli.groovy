@@ -52,8 +52,18 @@ public class PlatonCli {
 			dialogWorld = dialogWorldClass.newInstance();
 		}
 		
-		// TODO: set language
-		List<User> users = [ new User(1, "TestUser", "en", "us")];
+		String language = "en";
+		String region = "us";
+		if (options.language) {
+			if (options.language.contains("-")) {
+				(language, region) = options.language.split("-", 2);
+			} else {
+				language = options.language;
+				region = "??";
+			}
+		}
+		
+		List<User> users = [ new User(1, "Test User", language, region) ];
 		
 		DialogClient dialogClient = new CliDialogClient();
 		DialogSession session = Platon.createSession(scriptUrl, dialogClient, dialogWorld, users);
