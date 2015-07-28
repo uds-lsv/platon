@@ -448,7 +448,7 @@ class ScriptBindings {
 		
 		// Map user string to user
 		User addresseeUser;
-		if (addressee == scriptAdapter.addresseeUser) {
+		if (addressee == scriptAdapter.user) {
 			addresseeUser = scriptAdapter.dialogEngine.user;
 		} else if (addressee == scriptAdapter.addresseeAll) {
 			addresseeUser = null;

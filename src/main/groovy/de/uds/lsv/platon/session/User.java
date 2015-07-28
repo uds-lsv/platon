@@ -17,6 +17,10 @@
 package de.uds.lsv.platon.session;
 
 public class User {
+	/**
+	 * 0-based index into session users.
+	 */
+	public final int index;
 	public final int id;
 	public final String name;
 	public final String language;
@@ -24,7 +28,8 @@ public class User {
 	
 	private boolean speaking = false;
 	
-	public User(int id, String name, String language, String region) {
+	public User(int index, int id, String name, String language, String region) {
+		this.index = index;
 		this.id = id;
 		this.name = name;
 		this.language = language;

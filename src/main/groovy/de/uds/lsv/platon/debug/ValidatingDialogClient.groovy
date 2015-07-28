@@ -539,7 +539,7 @@ public class ValidatingDialogClient implements DialogClient, DialogWorld {
 				tell user: "??"
 			}
 		""");
-		List<User> users = [ new User(1, "TestUser", "en", "us")];
+		List<User> users = [ new User(0, 1, "TestUser", "en", "us")];
 		
 		ValidatingDialogClient dialogClient = new ValidatingDialogClient();
 		DialogSession dialogSession = Platon.createSession(scriptReader, dialogClient, dialogClient, users);

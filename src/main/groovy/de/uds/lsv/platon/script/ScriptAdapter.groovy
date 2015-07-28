@@ -20,19 +20,18 @@ import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
 import java.util.Map.Entry
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory
 import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl
 
-import de.martingropp.util.IdleManager;
-import de.martingropp.util.ReactionTrigger;
-import de.martingropp.util.ScoredObject;
+import de.martingropp.util.IdleManager
+import de.martingropp.util.ReactionTrigger
+import de.martingropp.util.ScoredObject
 import de.uds.lsv.platon.script.ListenableBindings.FallbackListener
-import de.uds.lsv.platon.session.DialogEngine;
+import de.uds.lsv.platon.session.DialogEngine
+import de.uds.lsv.platon.session.User
 import de.uds.lsv.platon.session.DialogSession.SessionActiveListener
 import de.uds.lsv.platon.world.WorldObject
 import de.uds.lsv.platon.world.WorldState.AddListener
@@ -53,7 +52,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	//public static final String NAMED_REACTION_STARTED = "main:started";
 	//public static final String NAMED_REACTION_STOPPED = "main:stopped";
 		
-	Object addresseeUser;
+	User user;
 	final Object addresseeAll = "all";
 
 	DialogEngine dialogEngine;
@@ -171,7 +170,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		this.dialogEngine = dialogEngine;
 		this.language = dialogEngine.getUser().language;
 		
-		addresseeUser = dialogEngine.user;
+		user = dialogEngine.user;
 		
 		logger.info(String.format(
 			"Initializing script adapter for user %d, language %s.",
@@ -217,7 +216,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		bindings.put("tell", scriptBindings.&tell);
 		
 		bindings.put("users", dialogEngine.session.users);
-		bindings.put("user", addresseeUser);
+		bindings.put("user", user);
 		bindings.put("all", addresseeAll);
 		
 		bindings.put("objectModified", scriptBindings.&objectModified);

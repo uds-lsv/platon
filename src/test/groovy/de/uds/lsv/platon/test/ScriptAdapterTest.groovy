@@ -60,7 +60,7 @@ public class ScriptAdapterTest extends Specification {
 		
 	def testTopLevelStatementsException(String scriptStatement) {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(0, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -97,7 +97,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputSimple() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -126,7 +126,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputCaseInsensitive() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -182,7 +182,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputLanguages() {
 		setup:
-			def user = new User(0, "test user", "de", "de");
+			def user = new User(-1, 0, "test user", "de", "de");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -211,7 +211,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputPattern() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -253,7 +253,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputClosure() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -295,7 +295,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputAddressee() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -332,7 +332,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjects() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -392,7 +392,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testSingleObject() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectResult = null;
 			
@@ -456,7 +456,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectAdded() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -494,7 +494,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectAddedById() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -532,7 +532,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectAddedInInput() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -576,7 +576,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectModified() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -617,7 +617,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectModifiedById() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -656,7 +656,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectModifiedInInput() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -705,7 +705,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectDeleted() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -743,7 +743,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectDeletedById() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -781,7 +781,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testObjectDeletedInInput() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -825,7 +825,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testEnvironmentModifiedString() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -861,7 +861,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testEnvironmentModifiedStringInInput() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -897,7 +897,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testEnvironmentModifiedClosure() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -933,7 +933,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testEnvironmentModifiedClosureInInput() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def objects = [:];
 			def objectsResult = null;
 			
@@ -969,7 +969,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testReactions() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1002,7 +1002,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputReactionOrder() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1065,7 +1065,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInputReactionOrderAgents() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1162,7 +1162,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testAgents() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1255,7 +1255,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testInitialAgent() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1283,7 +1283,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testPersistence() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1322,7 +1322,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testPersistenceInBindings() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1363,7 +1363,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testPersistenceWithAgents() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1412,7 +1412,7 @@ public class ScriptAdapterTest extends Specification {
 	 */
 	def testUninterruptible() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1453,7 +1453,7 @@ public class ScriptAdapterTest extends Specification {
 		setup:
 			def reactionMonitor = Mock(ReactionMonitor);
 			
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			
 			def worldObjects = [:];
 			List<Action> actions = [];
@@ -1499,7 +1499,7 @@ public class ScriptAdapterTest extends Specification {
 		setup:
 			def reactionMonitor = Mock(ReactionMonitor);
 			
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			
 			def worldObjects = [:];
 			List<Action> actions = [];
@@ -1551,7 +1551,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testTimeUnits() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1584,7 +1584,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testSyntaxError() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1603,7 +1603,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testException() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1625,7 +1625,7 @@ public class ScriptAdapterTest extends Specification {
 	 */
 	def testError() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1646,7 +1646,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testNext() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1674,7 +1674,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testDuplicateAgentException() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);
@@ -1697,7 +1697,7 @@ public class ScriptAdapterTest extends Specification {
 	
 	def testDuplicateAgentNameException() {
 		setup:
-			def user = new User(0, "test user", "en", "us");
+			def user = new User(-1, 0, "test user", "en", "us");
 			def session = Stub(DialogSession);
 			session.runOnSessionThread(_) >> { it[0]() };
 			def dialogEngine = Mock(DialogEngine);

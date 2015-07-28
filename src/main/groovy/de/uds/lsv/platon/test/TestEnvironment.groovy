@@ -193,5 +193,5 @@ public class TestEnvironment {
 		);
 	}
 	
-	static User user = new User(1, "Test User", "en", "US");
+	static User user = new User(-1, 1, "Test User", "en", "US");
 }

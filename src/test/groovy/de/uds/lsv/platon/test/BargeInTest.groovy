@@ -122,7 +122,7 @@ class BargeInTest extends Specification {
 			DialogClient dialogClientMonitor = Mock(DialogClient)
 			DialogClient dialogClient = createDialogClient(dialogClientMonitor, outputStartedSemaphore) 
 			
-			User user = new User(1, "Test User", "en", "US");
+			User user = new User(-1, 1, "Test User", "en", "US");
 			DialogSession session = createDialogSession([user], dialogClient);
 			DialogEngine dialogEngine = createDialogEngine(session, user, script)
 			
@@ -155,7 +155,7 @@ class BargeInTest extends Specification {
 			DialogClient dialogClientMonitor = Mock(DialogClient)
 			DialogClient dialogClient = createDialogClient(dialogClientMonitor, outputStartedSemaphore) 
 			
-			User user = new User(1, "Test User", "en", "US");
+			User user = new User(-1, 1, "Test User", "en", "US");
 			def session = createDialogSession([user], dialogClient);
 			def dialogEngine = createDialogEngine(session, user, script)
 			

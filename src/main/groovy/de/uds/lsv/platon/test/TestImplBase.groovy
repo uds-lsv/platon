@@ -92,7 +92,7 @@ public class TestImplBase extends Specification {
 	List<User> createUsers(int numUsers) {
 		List<User> users = [];
 		for (i in 1..numUsers) {
-			users.add(new User(i, "User ${i}", "en", "US"));
+			users.add(new User(i-1, i, "User ${i}", "en", "US"));
 		}
 		
 		return users;
