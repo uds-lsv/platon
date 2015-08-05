@@ -176,6 +176,7 @@ class StdlibTest extends TestImplBase {
 			init("""
 				#include 'stdlib.groovy'
 				input('ping') {
+					tell user, 'error';
 					tell user, 'pong';
 				}
 				input('peng') {
@@ -196,6 +197,7 @@ class StdlibTest extends TestImplBase {
 			init("""
 				#include 'stdlib.groovy'
 				input('ping') {
+					tell user, 'error';
 					tell user, 'pong';
 				}
 				input('peng') {
