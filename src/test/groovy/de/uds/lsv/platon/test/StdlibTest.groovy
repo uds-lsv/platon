@@ -170,4 +170,48 @@ class StdlibTest extends TestImplBase {
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "peng", _)
 	}
+	
+	def testRepeatLastOutputSimple() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input('ping') {
+					tell user, 'pong';
+				}
+				input('peng') {
+					stdlib.repeatLastOutput();
+				}
+			""")
+		when:
+			input("ping");
+			waitForTasks();
+			input("peng");
+			shutdownExecutors();
+		then:
+			2 * dialogClientMonitor.outputStart(_, _, "pong", _)
+	}
+	
+	def testRepeatLastOutputSimpleThen() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input('ping') {
+					tell user, 'pong';
+				}
+				input('peng') {
+					stdlib.repeatLastOutput().then {
+						tell user, 'pung';
+					};
+				}
+			""")
+		when:
+			input("ping");
+			waitForTasks();
+			input("peng");
+			shutdownExecutors();
+		then:
+			2 * dialogClientMonitor.outputStart(_, _, "pong", _)
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pung", _)
+	}
 }

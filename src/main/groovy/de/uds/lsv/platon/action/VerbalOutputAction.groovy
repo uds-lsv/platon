@@ -43,6 +43,16 @@ public class VerbalOutputAction extends Action {
 		}
 	}
 	
+	public VerbalOutputAction(VerbalOutputAction action) {
+		this(
+			action.session,
+			action.user, 
+			action.text,
+			action.uninterruptible,
+			action.details
+		);
+	}
+	
 	public VerbalOutputAction(DialogSession session, User user, int text, boolean uninterruptible, Map<String,Object> details) {
 		this(session, user, Integer.toString(text), uninterruptible, details);
 	}

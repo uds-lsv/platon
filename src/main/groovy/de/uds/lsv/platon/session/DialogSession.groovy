@@ -37,7 +37,7 @@ import de.uds.lsv.platon.action.VerbalInputAction
 import de.uds.lsv.platon.config.Config
 import de.uds.lsv.platon.world.WorldState
 
-@TypeChecked
+//@TypeChecked
 public class DialogSession implements Closeable {
 	private static final Log logger = LogFactory.getLog(DialogSession.class.getName());
 
@@ -63,7 +63,7 @@ public class DialogSession implements Closeable {
 	
 	ScheduledExecutorService executor;
 	Thread executorThread;
-	private volatile boolean executorShutdown = false;
+	private volatile boolean executorIdle = false;
 
 	private boolean active = false;
 	private List<SessionActiveListener> sessionActiveListeners = new ArrayList<>();
@@ -126,7 +126,7 @@ public class DialogSession implements Closeable {
 	@TypeChecked(TypeCheckingMode.SKIP)
 	private synchronized Future doSubmit(Closure closure) {
 		logger.debug("Submission to session executor: " + closure);
-		executorShutdown = false;
+		executorIdle = false;
 		return executor.submit({
 			try {
 				closure()
@@ -182,7 +182,7 @@ public class DialogSession implements Closeable {
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public synchronized ScheduledFuture schedule(callable, long delayMilliseconds) {
 		logger.debug("Submission (scheduled: ${delayMilliseconds}ms) to session executor: " + callable);
-		executorShutdown = false;
+		executorIdle = false;
 		return executor.schedule(
 			{
 				if (!isActive()) {
@@ -243,25 +243,64 @@ public class DialogSession implements Closeable {
 
 	/** Shutdown executor after all (non-scheduled) tasks have finished. */
 	private synchronized void waitForTasksAndShutdownExecutor() {
-		if (executorShutdown) {
+		if (executorIdle) {
 			logger.debug("Shutting down session executor.")
 			// shutdownNow cancels scheduled tasks which might
 			// still cause problems with just a shutdown.
 			executor.shutdownNow();
 		} else {
 			logger.debug("Session executor is busy - delaying shutdown.")
-			executorShutdown = true;
+			executorIdle = true;
 			executor.submit(this.&waitForTasksAndShutdownExecutor);
 		}
 	}
 	
-	void shutdownExecutor() {
+	/**
+	 * This method is just for testing.
+	 * If you call more than one of shutdownExecutor or waitForExecutorTasks
+	 * they will probably hang.
+	 */
+	public void shutdownExecutor() {
+		assert (executorThread != Thread.currentThread());
+		
 		logger.debug("Trying to shut down session executor.");
 		executor.submit(this.&waitForTasksAndShutdownExecutor);
+		
 		if (!executor.awaitTermination(1L, TimeUnit.MINUTES)) {
 			logger.warn("Timeout while waiting for executor to terminate.");
 		}
 		logger.info("Session executor shut down successfully.");
+	}
+	
+	private synchronized void doWaitForExecutorTasks(Object receiver) {
+		if (executorIdle) {
+			synchronized (receiver) {
+				receiver.notifyAll();
+			}
+		} else {
+			executorIdle = true;
+			executor.submit({ -> doWaitForExecutorTasks(receiver) });
+		}
+	}
+	
+	/**
+	 * This method is just for testing.
+	 * If you call more than one of shutdownExecutor or waitForExecutorTasks
+	 * they will probably hang.
+	 */
+	public void waitForExecutorTasks(long timeoutMillis=60000) {
+		assert (executorThread != Thread.currentThread());
+		
+		Object receiver = new Object();
+		executor.submit({ doWaitForExecutorTasks(receiver) });
+		
+		// Correctly guarding against spurious wakeups is tricky here.
+		// (You have to make sure that watcher tasks don't wait for
+		// each other or that there is really only one watcher task.)
+		// Since this is just for testing: TODO
+		synchronized (receiver) {
+			receiver.wait(timeoutMillis);
+		}
 	}
 	
 	public boolean isActive() {

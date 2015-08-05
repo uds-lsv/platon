@@ -43,6 +43,10 @@ public class ModifyObjectAction extends Action {
 		this.transactionId = transactionId;
 	}
 	
+	public ModifyObjectAction(ModifyObjectAction action) {
+		this(action.session, action.modifications, action.transactionId);
+	}
+	
 	@Override
 	protected void doExecute() {
 		/*

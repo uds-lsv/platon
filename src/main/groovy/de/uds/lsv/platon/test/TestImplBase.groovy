@@ -208,6 +208,10 @@ public class TestImplBase extends Specification {
 	}
 	*/
 	
+	void waitForTasks() {
+		session.waitForExecutorTasks();
+	}
+	
 	void shutdownExecutors() {
 		session.shutdownExecutor();
 	}

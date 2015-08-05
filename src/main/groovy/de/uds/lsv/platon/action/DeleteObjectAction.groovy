@@ -33,6 +33,15 @@ public class DeleteObjectAction extends Action {
 		this.objectId = objectId;
 		this.transactionId = transactionId;
 	}
+	
+	public DeleteObjectAction(DeleteObjectAction action) {
+		this(
+			action.session,
+			action.objectId,
+			action.errorHandler,
+			action.transactionId
+		);
+	}
 
 	@Override
 	protected void doExecute() {

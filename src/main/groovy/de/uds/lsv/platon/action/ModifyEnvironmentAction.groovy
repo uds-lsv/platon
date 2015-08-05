@@ -29,6 +29,10 @@ public class ModifyEnvironmentAction extends ModifyObjectAction {
 		super(session, modifications, transactionId);
 	}
 	
+	public ModifyEnvironmentAction(ModifyEnvironmentAction action) {
+		this(action.session, action.modifications, action.transactionId);
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("[ModifyEnvironmentAction: %s (transaction: %d)]", modifications.toString(), transactionId);

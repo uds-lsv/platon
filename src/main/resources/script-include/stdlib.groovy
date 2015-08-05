@@ -172,7 +172,33 @@ public class Stdlib {
 			((de.uds.lsv.platon.script.PriorityInputAction)priorityInputAction).cancel();
 			elseAction.call();
 		}
-	}	
+	}
+	
+	public de.uds.lsv.platon.script.Then repeatLastOutput(Closure filter=null) {
+		Collection<de.uds.lsv.platon.action.Action> lastOutputs =
+			scriptAdapter.dialogEngine.history.findAll({
+				it instanceof de.uds.lsv.platon.action.VerbalOutputAction
+			});
+		
+		if (filter != null) {
+			lastOutputs = lastOutputs.findAll(filter);
+		}
+		
+		if (lastOutputs.isEmpty()) {
+			return null;
+		}
+		
+		de.uds.lsv.platon.action.VerbalOutputAction action =
+			new de.uds.lsv.platon.action.VerbalOutputAction(
+				(de.uds.lsv.platon.action.VerbalOutputAction)lastOutputs[0]
+			);
+		
+		scriptAdapter.dialogEngine.addAction(action);
+		return new de.uds.lsv.platon.script.Then(
+			action,
+			scriptAdapter.dialogEngine
+		);
+	}
 }
 
 stdlib = new Stdlib(scriptAdapter);

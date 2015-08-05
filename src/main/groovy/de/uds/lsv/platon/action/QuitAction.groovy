@@ -35,6 +35,10 @@ public class QuitAction extends Action {
 		this.dialogEngine = dialogEngine;
 	}
 	
+	public QuitAction(QuitAction action) {
+		this(action.session, action.dialogEngine);
+	}
+	
 	@Override
 	protected void doExecute() {
 		logger.debug("Executing " + this);
