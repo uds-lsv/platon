@@ -506,6 +506,9 @@ class ScriptBindings {
 		if (filter instanceof String) {
 			String objectId = filter;
 			filter = { it.id == objectId };
+		} else if (filter instanceof GString) {
+			String objectId = filter.toString();
+			filter = { it.id == objectId };
 		}
 		
 		def allObjects = objects(filter);
