@@ -315,15 +315,14 @@ public abstract class WorldObject implements Cloneable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getSimpleName());
-		sb.append("( ");
+		sb.append("(\n");
 		
-		for (Field field : getClass().getFields()) {
-			if (field.getAnnotation(WorldField.class) != null) {
-				sb.append(field.getName());
-				sb.append('=');
-				sb.append(field.get(this));
-				sb.append(' ');
-			}
+		for (Entry<String,Object> entry : getProperties().entrySet()) {
+			sb.append('\t');
+			sb.append(entry.getKey());
+			sb.append('=');
+			sb.append(entry.getValue());
+			sb.append('\n');
 		}
 		
 		sb.append(')');

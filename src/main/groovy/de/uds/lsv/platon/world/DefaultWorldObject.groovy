@@ -71,9 +71,4 @@ public class DefaultWorldObject extends WorldObject {
 	public boolean isWritableField(String name) {
 		return this.@properties.containsKey(name);
 	}
-	
-	@Override
-	public String toString() {
-		return "DefaultWorldObject(" + getType() + ")";
-	}
 }
