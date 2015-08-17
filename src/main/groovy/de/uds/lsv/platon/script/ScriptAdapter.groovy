@@ -705,10 +705,22 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 			if (!initRun) {
 				initRun = true;
 				for (AgentInstance agent in agentStack.reverseIterator()) {
-					agent.init();
+					try {
+						agent.init();
+					}
+					catch (Exception e) {
+						logger.error(e);
+						throw exceptionMapper.translateException(e);
+					}
 				}
 				
-				agentStack.peekTop().enter();
+				try {
+					agentStack.peekTop().enter();
+				}
+				catch (Exception e) {
+					logger.error(e);
+					throw exceptionMapper.translateException(e);
+				}
 			}
 			
 		} else {
