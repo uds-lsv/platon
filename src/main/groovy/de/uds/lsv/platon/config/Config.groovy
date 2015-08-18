@@ -17,6 +17,7 @@
 package de.uds.lsv.platon.config;
 
 import groovy.transform.CompileStatic
+import java.lang.reflect.Field
 
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -116,4 +117,28 @@ public class Config {
 	 * Don't interrupt the current output when the user starts speaking.
 	 */
 	public boolean disableBargeIn = false;
+	
+	@Override
+	public String toString() {
+		Class<?> cls = getClass();
+		List<Field> fields = Arrays.asList(cls.getFields());
+		fields.sort {
+			Field a, Field b ->
+			a.getName() <=> b.getName() 
+		};
+		
+		StringBuilder sb = new StringBuilder();
+		for (Field field : fields) {
+			if (field.getName().equals('__$stMC')) {
+				continue;
+			}
+			
+			sb.append(field.getName());
+			sb.append(": ");
+			sb.append(field.get(this));
+			sb.append('\n');
+		}
+		
+		return sb.toString();
+	}
 }
