@@ -155,6 +155,10 @@ public class AgentStack implements Iterable<AgentInstance> {
 		return stack.size();
 	}
 	
+	public boolean isEmpty() {
+		return stack.isEmpty();
+	}
+	
 	public boolean contains(AgentInstance agentInstance) {
 		return stack.contains(agentInstance);
 	}

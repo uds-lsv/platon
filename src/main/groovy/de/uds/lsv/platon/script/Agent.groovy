@@ -245,6 +245,20 @@ public class Agent implements ReactionAgent {
 	public void setActiveInstance(AgentInstance instance) {
 		this.activeInstance = instance;
 	}
+	
+	public boolean isActive() {
+		return stack.any {
+			AgentInstance instance ->
+			this.is(instance.agent);
+		};
+	}
+	
+	public boolean isTop() {
+		return (
+			!stack.isEmpty() &&
+			this.is(stack.peekTop())
+		);
+	}
 
 	@Override
 	public String toString() {
