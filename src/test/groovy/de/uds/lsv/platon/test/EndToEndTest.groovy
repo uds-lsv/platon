@@ -858,14 +858,14 @@ class EndToEndTest extends TestImplBase {
 			thrown(Exception)
 	}
 	
-	def testSendInternal() {
+	def testSendReceive() {
 		setup:
 			init(
 				"""
 				input("ping") {
 					send(users[1], "pong");
 				}
-				internal(_) {
+				receive(_) {
 					tell user, it;
 				}
 				""",

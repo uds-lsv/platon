@@ -638,9 +638,9 @@ class ScriptBindings {
 		});
 	}
 	
-	public void internal(priority=true, pattern, Closure action) {
+	public void receive(priority=true, pattern, Closure action) {
 		if (!scriptAdapter.initializing) {
-			throw new IllegalStateException("internal has to be a top-level statement!");
+			throw new IllegalStateException("receive has to be a top-level statement!");
 		}
 		
 		if (!true.is(priority) && !(Number.isAssignableFrom(priority.getClass()))) {

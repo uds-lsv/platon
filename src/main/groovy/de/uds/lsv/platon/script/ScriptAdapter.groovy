@@ -238,7 +238,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		bindings.put("next", scriptBindings.&next);
 		
 		bindings.put("send", scriptBindings.&send);
-		bindings.put("internal", scriptBindings.&internal);
+		bindings.put("receive", scriptBindings.&receive);
 		
 		// additional definitions
 		if (definitions != null) {
