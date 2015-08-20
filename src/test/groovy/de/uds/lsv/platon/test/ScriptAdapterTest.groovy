@@ -654,6 +654,64 @@ public class ScriptAdapterTest extends Specification {
 			0 * reactionMonitor.reaction(_)
 	}
 	
+	def testObjectModifiedSingleClosure() {
+		setup:
+			def user = new User(-1, 0, "test user", "en", "us");
+			def objects = [:];
+			def objectsResult = null;
+			
+			def worldState = Stub(WorldState);
+			worldState.getObjects() >> objects;
+			
+			def session = Stub(DialogSession);
+			session.runOnSessionThread(_) >> { it[0]() };
+			session.getWorldState() >> worldState;
+			
+			def dialogEngine = Mock(DialogEngine);
+			dialogEngine.getUser() >> user;
+			dialogEngine.getSession() >> session;
+		
+			def testObject = new TestObject();
+			testObject.init(session, [ (WorldObject.FIELD_ID): "foo", "propertyA": "1", (WorldObject.FIELD_TYPE): TestObject.TYPE ]);
+			
+			def reactionMonitor = Mock(ReactionMonitor)
+			def scriptAdapter = new ScriptAdapter(
+				new StringReader("""
+					objectModified({
+						a, b ->
+						a.id == 'foo' && a.propertyA == 1 &&
+						b.propertyA == 2
+					}) {
+						reactionTriggered(0)
+					};
+					objectModified({
+						a, b ->
+						a.id == 'foo' && a.propertyA == 2
+					}) {
+						reactionTriggered(1)
+					};
+					objectModified({
+						a, b ->
+						a.id == 'foo' && a.propertyA == 1 &&
+						b.propertyA == 3
+					}) {
+						reactionTriggered(2)
+					};
+				"""),
+				null,
+				dialogEngine,
+				[ "reactionTriggered": { int id -> reactionMonitor.reaction(id) } ]
+			);
+	
+		when:
+			def oldProperties = testObject.getProperties();
+			testObject.propertyA = 2;
+			scriptAdapter.objectModified(testObject, oldProperties)
+		then:
+			1 * reactionMonitor.reaction(0)
+			0 * reactionMonitor.reaction(_)
+	}
+	
 	def testObjectModifiedInInput() {
 		setup:
 			def user = new User(-1, 0, "test user", "en", "us");

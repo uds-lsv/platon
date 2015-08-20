@@ -255,7 +255,11 @@ public class AgentInstance implements ReactionAgent {
 			item ->
 			Closure filterFrom = item.first;
 			Closure filterTo = item.second;
-			return filterFrom(oldProperties) && filterTo(newProperties);
+			if (filterTo == null) {
+				return filterFrom(oldProperties, newProperties);
+			} else {
+				return filterFrom(oldProperties) && filterTo(newProperties);
+			}
 		};
 	
 		for (Triple<Closure,Closure,Closure> item : matching) {

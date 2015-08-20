@@ -329,6 +329,14 @@ class ScriptBindings {
 		agentUnderConstruction.addInputAction(pattern, action, doublePriority);
 	}
 	
+	public void objectModified(Closure stateFilter, Closure action) {
+		if (stateFilter.getMaximumNumberOfParameters() != 2) {
+			throw new IllegalArgumentException("objectModified expects a closure accepting two arguments.");
+		}
+		
+		objectModified(stateFilter, null, action);
+	}
+	
 	public void objectModified(Object fromObjectState, Closure toObjectState, Closure action) {
 		if (!(fromObjectState instanceof Closure || fromObjectState instanceof String)) {
 			throw new IllegalArgumentException("Invalid fromObjectState filter: " + fromObjectState);
@@ -340,9 +348,10 @@ class ScriptBindings {
 		}
 		
 		logger.debug(String.format(
-			"Adding %sobjectModified reaction for %s -> %s%s",
+			"Adding %sobjectModified reaction for %s%s%s",
 			scriptAdapter.initializing ? "" : "one-time ",
-			fromObjectState, toObjectState,
+			fromObjectState,
+			toObjectState == null ? "" : " -> " + toObjectState,
 			scriptAdapter.initializing ? " to agent ${agentUnderConstruction}" : ""
 		));
 		
