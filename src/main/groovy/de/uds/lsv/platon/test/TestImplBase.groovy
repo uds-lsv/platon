@@ -61,7 +61,7 @@ public class TestImplBase extends Specification {
 		doInit(kwargs);
 	}
 	
-	private void doInit(Map kwargs=[:]) {
+	protected void doInit(Map kwargs=[:]) {
 		TestEnvironment.registerTypes();
 		
 		config.disableBargeIn = kwargs.get("disableBargeIn", true);

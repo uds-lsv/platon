@@ -282,13 +282,13 @@ public class IncludeReader extends PreprocessingReader {
 				));
 			}
 			
-			alreadyIncluded.add(url);
-			
 			try {
-				return new Pair<>(
+				Pair<InputStream,URL> pair = new Pair<>(
 					url.openStream(),
 					url
 				);
+				alreadyIncluded.add(url);
+				return pair;
 			}
 			catch (IOException e) {
 				continue;
