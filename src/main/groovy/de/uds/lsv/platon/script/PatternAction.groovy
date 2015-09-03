@@ -122,6 +122,18 @@ public class PatternAction implements Comparable<PatternAction> {
 			return null;
 		}
 		
+		// InputMatcher
+		if (pattern instanceof InputMatcher) {
+			InputMatcher matcher = (InputMatcher)pattern;
+			
+			if (matcher.matchesInput(input)) {
+				logger.debug(String.format("Accepted »%s«: InputMatcher %s", input, matcher));
+				return matcher;
+			}
+			
+			return null;
+		}
+		
 		// .equals
 		if (pattern.equals(input)) {
 			logger.debug(String.format("Accepted »%s«: equals %s", input, pattern));
