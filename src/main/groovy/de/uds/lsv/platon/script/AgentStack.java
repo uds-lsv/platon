@@ -72,7 +72,7 @@ public class AgentStack implements Iterable<AgentInstance> {
 			throw new IllegalStateException("There is no active agent!");
 		}
 		
-		popIncluding(activeAgentInstance);
+		popIncluding(activeAgentInstance, true);
 		stack.addFirst(agentInstance);
 	}
 	
@@ -86,16 +86,19 @@ public class AgentStack implements Iterable<AgentInstance> {
 			throw new IllegalStateException("There is no active agent!");
 		}
 		
-		popIncluding(activeAgentInstance);
+		popIncluding(activeAgentInstance, false);
 		return stack.getFirst();
 	}
 	
-	private void popIncluding(AgentInstance lastAgentInstanceToRemove) {
+	private void popIncluding(AgentInstance lastAgentInstanceToRemove, boolean removeLast) {
 		if (lastAgentInstanceToRemove == null) {
 			throw new IllegalArgumentException("lastAgentInstanceToRemove cannot be null!");
 		}
 		
-		while (stack.size() > 1) {
+		while (
+			(stack.size() > 1) ||
+			(removeLast && !stack.isEmpty())
+		) {
 			AgentInstance removed = stack.removeFirst();
 			if (removed == lastAgentInstanceToRemove) {
 				return;
