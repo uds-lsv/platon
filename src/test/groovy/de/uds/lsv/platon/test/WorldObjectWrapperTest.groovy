@@ -30,7 +30,7 @@ import de.uds.lsv.platon.world.WorldObject
 
 public class WorldObjectWrapperTest {
 	@WorldClass("test.TestObject")
-	static class TestObject extends WorldObject {
+	public static class TestObject extends WorldObject {
 		private static String TYPE = "test.TestObject";
 		
 		@WorldField
@@ -40,12 +40,12 @@ public class WorldObjectWrapperTest {
 		public String propertyB = "foo";
 		
 		@WorldField
-		boolean propertyC = false;
+		public boolean propertyC = false;
 		
 		@WorldField(writable=false)
-		String propertyD = null;
+		public String propertyD = null;
 		
-		Object[] propertyE = null;
+		public Object[] propertyE = null;
 		
 		@WorldMethod
 		public List<Action> methodC() {
