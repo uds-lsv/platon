@@ -630,7 +630,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		
 		try {
 			def wrapper = getWorldObjectWrapper(object);
-			Map<String,Object> newProperties = object.getProperties();
+			Map<String,Object> newProperties = object.getPropertiesWithInternalNames();
 			for (AgentInstance agent : agentStack) {
 				agent.triggerObjectModifiedReactions(
 					oldProperties, newProperties, wrapper

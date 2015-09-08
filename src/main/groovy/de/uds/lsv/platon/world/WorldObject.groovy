@@ -78,6 +78,23 @@ public abstract class WorldObject implements Cloneable {
 		return map;
 	}
 	
+	public Map<String,Object> getPropertiesWithInternalNames() {
+		Map<String,Object> map = new HashMap<>();
+		map.put("id", id);
+		map.put("type", getType());
+		
+		for (Field field : this.getClass().getFields()) {
+			if (field.getAnnotation(WorldField.class) != null) {
+				map.put(
+					field.getName(),
+					getWorldField(field)
+				);
+			}
+		}
+		
+		return map;
+	}
+	
 	private Object getWorldField(Field field) {
 		if (Modifier.isPublic(field.getModifiers())) {
 			// Accessible field

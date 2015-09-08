@@ -141,7 +141,7 @@ public class WorldState implements Closeable {
 		}
 		
 		WorldObject object = objects.get(objectId);
-		Map<String,Object> oldState = object.getProperties();
+		Map<String,Object> oldState = object.getPropertiesWithInternalNames();
 		
 		object.modified(modifications);
 		

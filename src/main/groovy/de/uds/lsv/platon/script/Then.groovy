@@ -28,10 +28,11 @@ import de.uds.lsv.platon.session.DialogEngine;
 public class Then {
 	private static final Log logger = LogFactory.getLog(Then.class.getName());
 	
+	private final DialogEngine dialogEngine;
+	
 	/**
 	 * The action after which the Then comes.
 	 */
-	private final DialogEngine dialogEngine;
 	private final Action afterAction;
 	private List<Closure> thenClosures = new ArrayList<>(4);
 	private boolean thenClosuresCalled = false;

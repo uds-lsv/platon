@@ -209,7 +209,7 @@ class WorldStateTest {
 				}
 			);
 
-			def oldProperties = worldObject.getProperties();
+			def oldProperties = worldObject.getPropertiesWithInternalNames();
 			worldState.changeNotificationModify(properties);
 			
 			Assert.assertEquals(worldObject.getProperties(), notification[0]);
