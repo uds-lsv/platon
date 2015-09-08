@@ -66,7 +66,7 @@ public abstract class WorldObject implements Cloneable {
 		map.put(FIELD_ID, id);
 		map.put(FIELD_TYPE, getType());
 		
-		for (Field field : this.getClass().getDeclaredFields()) {
+		for (Field field : this.getClass().getFields()) {
 			if (field.getAnnotation(WorldField.class) != null) {
 				map.put(
 					field.getName(),
@@ -242,7 +242,7 @@ public abstract class WorldObject implements Cloneable {
 			} else {
 				Field field;
 				try {
-					field = this.getClass().getDeclaredField(entry.getKey());
+					field = this.getClass().getField(entry.getKey());
 				}
 				catch (NoSuchFieldException e) {
 					return false;
@@ -264,7 +264,7 @@ public abstract class WorldObject implements Cloneable {
 	 * @return
 	 */
 	public boolean isWorldField(String name) {
-		Field field = getClass().getDeclaredField(name);
+		Field field = getClass().getField(name);
 		if (field == null) {
 			return false;
 		}
@@ -282,7 +282,7 @@ public abstract class WorldObject implements Cloneable {
 	 * @return
 	 */
 	public boolean isWritableField(String name) {
-		Field field = getClass().getDeclaredField(name);
+		Field field = getClass().getField(name);
 		if (field == null) {
 			return false;
 		}
@@ -305,7 +305,7 @@ public abstract class WorldObject implements Cloneable {
 			}
 			
 			setWorldField(
-				this.getClass().getDeclaredField(entry.getKey()),
+				this.getClass().getField(entry.getKey()),
 				entry.getValue()
 			);
 		}
