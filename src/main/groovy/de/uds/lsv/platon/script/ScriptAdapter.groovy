@@ -706,7 +706,13 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 				initRun = true;
 				for (AgentInstance agent in agentStack.reverseIterator()) {
 					try {
-						agent.init();
+						focusAgentInstance = agent;
+						try {
+							agent.init();
+						}
+						finally {
+							focusAgentInstance = null;
+						}
 					}
 					catch (Exception e) {
 						logger.error(e);

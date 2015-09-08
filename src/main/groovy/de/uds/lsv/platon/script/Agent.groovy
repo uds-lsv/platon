@@ -209,9 +209,17 @@ public class Agent implements ReactionAgent {
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public void replace(Object... args) {
 		AgentInstance instance = new AgentInstance(stack, this);
-		stack.replaceActive(instance);
-		instance.init(*args);
-		instance.enter(*args);
+		
+		AgentInstance oldInstance = scriptAdapter.focusAgentInstance; 
+		scriptAdapter.focusAgentInstance = instance;
+		try {
+			stack.replaceActive(instance);
+			instance.init(*args);
+			instance.enter(*args);
+		}
+		finally {
+			scriptAdapter.focusAgentInstance = oldInstance;
+		}
 	}
 	
 	/**
@@ -221,9 +229,17 @@ public class Agent implements ReactionAgent {
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public void call(Object... args) {
 		AgentInstance instance = new AgentInstance(stack, this);
-		stack.push(instance, true);
-		instance.init(*args);
-		instance.enter(*args);
+		
+		AgentInstance oldInstance = scriptAdapter.focusAgentInstance;
+		scriptAdapter.focusAgentInstance = instance;
+		try {
+			stack.push(instance, true);
+			instance.init(*args);
+			instance.enter(*args);
+		}
+		finally {
+			scriptAdapter.focusAgentInstance = oldInstance;
+		}
 	}
 	
 	/**
@@ -233,9 +249,17 @@ public class Agent implements ReactionAgent {
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public void push(Object... args) {
 		AgentInstance instance = new AgentInstance(stack, this);
-		stack.push(instance, false);
-		instance.init(*args);
-		instance.enter(*args);
+		
+		AgentInstance oldInstance = scriptAdapter.focusAgentInstance;
+		scriptAdapter.focusAgentInstance = instance;
+		try {
+			stack.push(instance, false);
+			instance.init(*args);
+			instance.enter(*args);
+		}
+		finally {
+			scriptAdapter.focusAgentInstance = oldInstance;
+		}
 	}
 
 	public AgentInstance getActiveInstance() {
