@@ -346,6 +346,11 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		return object;
 	}
 	
+	/**
+	 * @param input
+	 * @return
+	 *   true, iff at least a part of the prepared input could be handled.
+	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public boolean handleInput(String input, Map<String,String> details=null) {
 		if (
@@ -392,20 +397,21 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 			}
 			
 			// handle prepared parts
+			boolean result = false;
 			for (Object currentInput : preparedInputs) {
-				if (!handlePreparedInput(currentInput, details)) {
-					logger.debug("Script can not handle input »" + input + "« (prepared: " + currentInput + "). State stack: »" + agentStack + "«.");
-					return false;
+				if (handlePreparedInput(currentInput, details)) {
+					result = true;
+				} else {
+					logger.debug("Script can not (fully) handle input »" + input + "« (prepared: " + currentInput + "). State stack: »" + agentStack + "«.");
 				}
 			}
-		
+			
+			return result;
 		}
 		catch (Exception e) {
 			logger.error(e);
 			throw exceptionMapper.translateException(e);
 		}
-		
-		return true;
 	}
 	
 	@TypeChecked(TypeCheckingMode.SKIP)
