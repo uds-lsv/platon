@@ -522,8 +522,22 @@ class ScriptBindings {
 		
 		def allObjects = objects(filter);
 		if (allObjects.isEmpty()) {
+			System.err.println("Object filter yielded no results: " + originalFilter);
+			System.err.println("Existing objects:");
+			System.err.println(
+				scriptAdapter.dialogEngine.session.getWorldState().getObjects().values().collect({
+					"  * " + it.getPropertiesWithInternalNames().toString()
+				}).join("\n")
+			);
 			throw new WrongNumberOfObjectsException("Object filter yielded no results: " + originalFilter);
 		} else if (allObjects.size() > 1) {
+			System.err.println("Object filter yielded ambiguous results: " + originalFilter);
+			System.err.println("Existing objects:");
+			System.err.println(
+				scriptAdapter.dialogEngine.session.getWorldState().getObjects().values().collect({
+					"  * " + it.getPropertiesWithInternalNames().toString()
+				}).join("\n")
+			);
 			throw new WrongNumberOfObjectsException("Object filter yielded ambiguous results: " + originalFilter);
 		}
 		
@@ -532,7 +546,7 @@ class ScriptBindings {
 	
 	public String getEnvironment(String key) {
 		if (scriptAdapter.initializing) {
-			throw new IllegalStateException("You cannot use 'getEnvironment' as a top-level statement.");
+			throw new IllegalStateException("You cannot use 'getEnvironment' as a top-level statement	.");
 		}
 		
 		return scriptAdapter.dialogEngine.session.worldState.getEnvironmentVariable(key);

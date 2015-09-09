@@ -16,6 +16,8 @@
 
 package de.uds.lsv.platon.world
 
+import java.util.Map.Entry
+
 /**
  * A fallback world object class that can't be modified
  * by scripts.
@@ -50,6 +52,24 @@ public class DefaultWorldObject extends WorldObject {
 	@Override
 	public Map<String,Object> getProperties() {
 		return (Map)this.@properties;
+	}
+	
+	@Override
+	public Map<String,Object> getPropertiesWithInternalNames() {
+		Map<String,Object> properties = new HashMap<>();
+		properties["type"] = this.getType();
+		properties["id"] = this.getId();
+		
+		for (Entry<String,Object> entry : this.@properties.entrySet()) {
+			if (
+				(entry.getKey() != WorldObject.FIELD_ID) &&
+				(entry.getKey() != WorldObject.FIELD_TYPE)
+			) {
+				properties[entry.getKey()] = entry.getValue();
+			}
+		}
+		
+		return properties;
 	}
 	
 	@Override
