@@ -72,7 +72,7 @@ public class AgentStack implements Iterable<AgentInstance> {
 			throw new IllegalStateException("There is no active agent!");
 		}
 		
-		popIncluding(activeAgentInstance, true);
+		popIncluding(activeAgentInstance, false);
 		stack.addFirst(agentInstance);
 	}
 	
