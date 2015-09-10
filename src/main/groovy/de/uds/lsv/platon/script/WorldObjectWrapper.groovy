@@ -63,6 +63,11 @@ class WorldObjectWrapper extends GroovyObjectSupport {
 		}
 	}
 	
+	@TypeChecked(TypeCheckingMode.SKIP)
+	public Object hasProperty(String property) {
+		return this.@realObject.hasProperty(property);
+	}
+	
 	@Override
 	@TypeChecked(TypeCheckingMode.SKIP)
 	public Object getProperty(String property) {
