@@ -339,7 +339,7 @@ public abstract class WorldObject implements Cloneable {
 			sb.append(entry.getKey());
 			sb.append('=');
 			sb.append(entry.getValue());
-			sb.append('\n');
+			sb.append(", ");
 		}
 		
 		sb.append(')');

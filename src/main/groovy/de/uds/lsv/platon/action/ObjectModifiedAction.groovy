@@ -66,8 +66,10 @@ public class ObjectModifiedAction extends Action {
 	@Override
 	public String toString() {
 		return String.format(
-			"[ObjectModifiedAction: %s]",
-			properties
+			"[ObjectModifiedAction: %s (old: %s, new: %s)]",
+			modifications,
+			oldState,
+			modifiedObject.getProperties()
 		);
 	}
 }
