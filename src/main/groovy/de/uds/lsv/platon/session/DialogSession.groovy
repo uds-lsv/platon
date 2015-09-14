@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory
 import de.martingropp.util.ReactionMap
 import de.uds.lsv.platon.DialogClient
 import de.uds.lsv.platon.DialogWorld
+import de.uds.lsv.platon.action.Action
 import de.uds.lsv.platon.action.IOType
 import de.uds.lsv.platon.action.VerbalInputAction
 import de.uds.lsv.platon.config.Config
@@ -67,7 +68,9 @@ public class DialogSession implements Closeable {
 
 	private boolean active = false;
 	private List<SessionActiveListener> sessionActiveListeners = new ArrayList<>();
-	
+
+	private Action activeAction = null;
+		
 	public DialogSession(
 		Config config,
 		DialogClient dialogClient,
@@ -416,5 +419,13 @@ public class DialogSession implements Closeable {
 	
 	public void changeNotificationDelete(String objectId, int transactionId=-1) {
 		getTransactionManager().addChangeNotificationDelete(transactionId, objectId);
+	}
+	
+	public Action getActiveAction() {
+		return activeAction;
+	}
+	
+	public void setActiveAction(Action action) {
+		this.activeAction = action;
 	}
 }

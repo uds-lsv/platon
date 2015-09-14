@@ -55,6 +55,11 @@ public abstract class Action {
 		errorCode ->
 		logger.error("Error executing ${this}: ${errorCode}");
 	};
+
+	/**
+	 * Actions created while running this action. 
+	 */
+	private List<Action> followupActions = new ArrayList<>();
 	
 	protected boolean completed = false;
 	protected boolean successful = false;
@@ -63,8 +68,8 @@ public abstract class Action {
 	public long submissionTime = -1;
 	
 	/**
-	 * The id of the user that is affected by this action,
-	 * or -1 if more than one user is affected.
+	 * The user that is affected by this action,
+	 * or null if more than one user is affected.
 	 */
 	final User user;
 	final DialogSession session;
@@ -97,7 +102,7 @@ public abstract class Action {
 	 * Execute the action.
 	 * Internally calls doExecute.
 	 */
-	final def execute() {
+	public final void execute() {
 		synchronized (this) {
 			if (executed) {
 				throw new IllegalStateException("This action was already executed!");
@@ -105,7 +110,14 @@ public abstract class Action {
 			executed = true;
 		}
 
-		doExecute();
+		session.setActiveAction(this);
+		try {
+			doExecute();
+		}
+		finally {
+			session.setActiveAction(null);
+		}
+		
 		session.schedule(
 			{
 				if (!completed) {
@@ -121,7 +133,7 @@ public abstract class Action {
 	 * submitted to the server.
 	 * They get the result of the Thrift API function as an argument.
 	 */
-	void addSubmissionReaction(Closure closure) {
+	public void addSubmissionReaction(Closure closure) {
 		onSubmitted.add(closure);
 	}
 	
@@ -131,7 +143,7 @@ public abstract class Action {
 	 * the game server and have been transferred back to the dialog
 	 * engine.
 	 */
-	void addCompletionReaction(Closure closure) {
+	public void addCompletionReaction(Closure closure) {
 		onComplete.add(closure);
 	}
 	
@@ -176,7 +188,7 @@ public abstract class Action {
 	 * Abort the action (if applicable;
 	 * currently only supported by VerbalOutputAction).
 	 */
-	void abort() {
+	public void abort() {
 		// default: empty 
 	}
 	
@@ -189,6 +201,27 @@ public abstract class Action {
 	
 	public boolean wasSuccessful() {
 		return successful;
+	}
+	
+	public void addFollowupAction(Action action) {
+		if (this.is(action)) {
+			throw new IllegalArgumentException("An action can not be a followup action of itself!");
+		}
+		followupActions.add(action);
+	}
+	
+	public boolean followupActionsCompleted() {
+		if (!completed) {
+			return false;
+		}
+		
+		for (Action action : followupActions) {
+			if (!action.followupActionsCompleted()) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
 

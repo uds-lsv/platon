@@ -31,13 +31,21 @@ public class ActionQueue {
 	private final DialogEngine dialogEngine;
 
 	Action lastAction = null;
-		
+	
+	// Actions that are still waiting for followup actions to complete
+	private Map<Class<? extends Action>, Action> blockingActions = new HashMap<>();
+	
 	public ActionQueue(DialogEngine dialogEngine) {
 		this.dialogEngine = dialogEngine;
 	}
 	
 	private void prepareAction(Action action) {
 		action.onComplete.add(this.&nextAction);
+		
+		Action active = dialogEngine.getSession().getActiveAction();
+		if (active != null) {
+			active.addFollowupAction(action);
+		}
 	}
 	
 	/**
@@ -97,11 +105,34 @@ public class ActionQueue {
 		// The previous action is already committed to
 		// the history here.
 		// All actions: history + lastAction + queue
-		Action action = queue.poll();
-		lastAction = action;
 		
-		if (action != null) {
-			action.execute();
+		Action selectedAction = null;
+		Iterator<Action> it = queue.iterator();
+		while (it.hasNext()) {
+			Action a = it.next();
+			Class<? extends Action> cls = a.getClass();
+			Action blocking = blockingActions.get(cls);
+			if (blocking != null) {
+				if (blocking.followupActionsCompleted()) {
+					blockingActions.remove(cls);
+				} else {
+					logger.debug(
+						"Action still waiting for followup actions: " + a
+					);
+					continue;
+				}
+			}
+			
+			selectedAction = a;
+			it.remove();
+			break;
+		}
+		
+		lastAction = selectedAction;
+		
+		if (selectedAction != null) {
+			blockingActions.put(lastAction.getClass(), selectedAction);
+			selectedAction.execute();
 		}
 	}
 	

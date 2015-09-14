@@ -40,7 +40,7 @@ public class DialogEngine implements Closeable, AddListener, ModifyListener, Del
 	private final User user;
 	
 	private ScriptAdapter scriptAdapter;
-
+	
 	public boolean terminated = false;
 	
 	/**
@@ -131,9 +131,8 @@ public class DialogEngine implements Closeable, AddListener, ModifyListener, Del
 				actionQueue.bargeIn();
 			}
 			
-			//session.submit({
-				scriptAdapter.handleInput(text, details);
-			//});
+			scriptAdapter.handleInput(text, details);
+		
 		} else {
 			logger.info("Game is not active -- ignoring inputComplete.");
 		}
