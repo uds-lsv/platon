@@ -402,7 +402,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 				if (handlePreparedInput(currentInput, details)) {
 					result = true;
 				} else {
-					logger.debug("Script can not (fully) handle input »" + input + "« (prepared: " + currentInput + "). State stack: »" + agentStack + "«.");
+					logger.debug("Script can not (fully) handle input »" + input + "« (prepared: " + currentInput + "). Agent stack: »" + agentStack + "«.");
 				}
 			}
 			
