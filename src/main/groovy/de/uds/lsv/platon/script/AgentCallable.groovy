@@ -44,12 +44,19 @@ public class AgentCallable {
 	public def call(Object... args) {
 		AgentInstance agentInstance = agentInstance.get();
 		if (agentInstance == null || !agentInstance.isActive()) {
-			logger.debug("The agent instance belonging to ${this} is no longer active and has been garbage-collected -- not running.");
+			logger.debug("The agent instance belonging to ${this} is no longer active and/or has been garbage-collected -- not running.");
 			return;
 		}
 		
-		agentInstance.getStack().setActiveAgentInstance(agentInstance);
-		return closure(*args);
+		AgentInstance oldFocusAgentInstance = agentInstance.agent.scriptAdapter.focusAgentInstance; 
+		agentInstance.agent.scriptAdapter.focusAgentInstance = agentInstance;
+		try {
+			agentInstance.getStack().setActiveAgentInstance(agentInstance);
+			return closure(*args);
+		}
+		finally {
+			agentInstance.agent.scriptAdapter.focusAgentInstance = oldFocusAgentInstance;
+		}
 	}
 	
 	public int getMaximumNumberOfParameters() {

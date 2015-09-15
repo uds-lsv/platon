@@ -59,7 +59,13 @@ public abstract class Action {
 	/**
 	 * Actions created while running this action. 
 	 */
-	private List<Action> followupActions = new ArrayList<>();
+	private List<Action> followupActions = null;
+	
+	/**
+	 * Partial actions added while running this
+	 * action.
+	 */
+	private List<PartialAction> partialActions = null;
 	
 	protected boolean completed = false;
 	protected boolean successful = false;
@@ -169,6 +175,15 @@ public abstract class Action {
 		
 		logger.debug("Action completed: ${this} (successful: " + successful + ")");
 		
+		// Add partial actions to queue
+		if (partialActions != null) {
+			for (PartialAction action : partialActions) {
+				// session.
+				// TODO
+			}
+		}
+		
+		
 		// Add to history
 		if (user == null) {
 			session.dialogEngines?.values()*.addHistoryItem(this);
@@ -207,6 +222,11 @@ public abstract class Action {
 		if (this.is(action)) {
 			throw new IllegalArgumentException("An action can not be a followup action of itself!");
 		}
+		
+		if (followupActions == null) {
+			followupActions = new ArrayList<>();
+		}
+		
 		followupActions.add(action);
 	}
 	
@@ -215,13 +235,25 @@ public abstract class Action {
 			return false;
 		}
 		
-		for (Action action : followupActions) {
-			if (!action.followupActionsCompleted()) {
-				return false;
+		if (followupActions != null) {
+			for (Action action : followupActions) {
+				if (!action.followupActionsCompleted()) {
+					return false;
+				}
 			}
 		}
 		
 		return true;
+	}
+	
+	public PartialAction addPartialAction(Closure closure) {
+		if (completed) {
+			throw new IllegalStateException("Action is already completed!");
+		}
+		
+		PartialAction partialAction = new PartialAction(this, closure);
+		addFollowupAction(partialAction);
+		return partialAction;
 	}
 }
 
