@@ -399,6 +399,7 @@ public class DialogSession implements Closeable {
 			details
 		);
 	
+		// TODO: ActionQueue?
 		submit(action);
 	}
 	

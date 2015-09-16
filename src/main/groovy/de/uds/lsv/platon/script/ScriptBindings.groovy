@@ -141,7 +141,7 @@ class ScriptBindings {
 		Future[] future = [ null ];
 		CancellableJob job = new CancellableJob(
 			new AgentCallable(agentInstance, durationWithClosure.closure),
-			{ future[0]?.cancel() }
+			{ future[0]?.cancel(true) }
 		);
 		future[0] = scriptAdapter.dialogEngine.getSession().schedule(
 			job,

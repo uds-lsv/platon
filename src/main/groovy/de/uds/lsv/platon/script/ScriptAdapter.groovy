@@ -283,6 +283,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 		finally {
@@ -412,6 +413,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 	}
@@ -582,6 +584,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 		
@@ -622,6 +625,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 	}
@@ -647,6 +651,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 	}
@@ -669,6 +674,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 	}
@@ -690,6 +696,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
 	}
@@ -724,6 +731,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 					}
 					catch (Exception e) {
 						logger.error(e);
+			e.printStackTrace();
 						throw exceptionMapper.translateException(e);
 					}
 				}
@@ -733,6 +741,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 				}
 				catch (Exception e) {
 					logger.error(e);
+					e.printStackTrace();
 					throw exceptionMapper.translateException(e);
 				}
 			}

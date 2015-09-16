@@ -46,6 +46,8 @@ public class TestImplBase extends Specification {
 	AtomicInteger nextSessionId = new AtomicInteger(0);
 	AtomicInteger nextOutputId = new AtomicInteger(0);
 	
+	List<Throwable> exceptions = new ArrayList<>();
+	
 	public void init(Map kwargs=[:], String script) {
 		config.openDialogScript = (Closure<Reader>){
 			->
@@ -71,7 +73,11 @@ public class TestImplBase extends Specification {
 		
 		config.serverExceptionHandler = (Closure)kwargs.get(
 			"serverExceptionHandler",
-			{ e -> throw e }
+			{
+				Throwable e ->
+				exceptions.add(e);
+				throw e;
+			}
 		);
 		users = createUsers(kwargs.get("numUsers", 1));
 		dialogClient = createDialogClient()
@@ -187,27 +193,6 @@ public class TestImplBase extends Specification {
 		return dialogClient;
 	}
 	
-	/*
-	def createDispatcher(gameServer, sessionInfo) {
-		ServerConnection serverConnection = new ServerConnection(gameServer, sessionInfo);
-	
-		config.connectToGameServer = {
-			_gameServer, _sessionInfo ->
-			serverConnection
-		};
-			
-		dispatcher = new DialogDispatcher(config);
-		dispatcher.sessionInit(
-			// String gameServer
-			null,
-			// SessionInfo info
-			sessionInfo
-		)
-	
-		return dispatcher;
-	}
-	*/
-	
 	void waitForTasks() {
 		session.waitForExecutorTasks();
 	}
@@ -238,5 +223,27 @@ public class TestImplBase extends Specification {
 	
 	void setActive(boolean active) {
 		session.setActive(active);
+	}
+	
+	void checkExceptions() {
+		println "checkExceptions! " + exceptions;
+		if (!exceptions.isEmpty()) {
+			System.err.println(String.format(
+				"There have been %d exceptions!",
+				exceptions.size()
+			));
+			int index = 1;
+			for (Throwable e : exceptions) {
+				System.err.println("---------- ${index} ----------");
+				e.printStackTrace();
+				index++;
+			}
+			try {
+				throw exceptions[0];
+			}
+			finally {
+				exceptions.clear();
+			}
+		}
 	}
 }

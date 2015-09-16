@@ -36,6 +36,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -52,6 +54,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -68,6 +72,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -86,6 +92,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogWorldMonitor.changeRequestModify(
 				-1,
@@ -109,6 +117,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogWorldMonitor.changeRequestModify(
 				-1,
@@ -132,6 +142,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogWorldMonitor.changeRequestModify(
 				-1,
@@ -162,6 +174,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogWorldMonitor.changeRequestModify(
 				-1,
@@ -189,6 +203,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogWorldMonitor.changeRequestModify(
 				-1,
@@ -221,6 +237,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping");
 			Thread.sleep(1500);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			duration >= 1000L
 			duration < 1500L
@@ -233,10 +251,9 @@ class EndToEndTest extends TestImplBase {
 			init("""
 				input(~/ping/) {
 					tell user, 'pong';
-					def job = after(
-						500.milliseconds,
-						{ tell user, 'error' }
-					);
+					def job = after 500.milliseconds {
+						tell user, 'error'
+					};
 					job.cancel();
 				}
 			""");
@@ -244,6 +261,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping");
 			Thread.sleep(1500);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -268,6 +287,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping");
 			Thread.sleep(2000);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			duration >= 800L
 			duration < 1500L
@@ -286,6 +307,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			session.setActive(true);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "init", _)
 	}
@@ -304,6 +327,8 @@ class EndToEndTest extends TestImplBase {
 			session.setActive(true);
 			session.setActive(true);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "init", _)
 	}
@@ -320,6 +345,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			session.setActive(false);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			{}
 	}
@@ -334,6 +361,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -348,6 +377,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogWorldMonitor.changeRequestModify(-1, [ "foo": "bar" ])
 	}
@@ -363,6 +394,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			exception instanceof DialogScriptException
 			exception.startLine == 4
@@ -378,6 +411,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "2", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -393,6 +428,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "2", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -408,6 +445,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "2", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -424,6 +463,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "2", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -440,6 +481,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "2", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -455,6 +498,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "2", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -474,6 +519,8 @@ class EndToEndTest extends TestImplBase {
 			input("pong");
 			input("peng");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "3", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -496,6 +543,8 @@ class EndToEndTest extends TestImplBase {
 			Thread.sleep(1000);
 			input("peng");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			history.get(0) instanceof VerbalInputAction
 			history.get(1) instanceof VerbalOutputAction
@@ -514,6 +563,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ing");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -533,6 +584,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ing");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -551,6 +604,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ing");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -567,6 +622,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping", [ "foo": "pong" ]);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -581,6 +638,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("blah", [ "foo": "ping" ]);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -597,6 +656,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping");
 			Thread.sleep(1500);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -618,6 +679,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping");
 			Thread.sleep(1500);
 			shutdownExecutors();
+			checkExceptions();
+
 			
 		then:
 			timestamp >= 0L
@@ -641,6 +704,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping");
 			Thread.sleep(1500);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -660,6 +725,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			1 * dialogClientMonitor.outputStart(_, _, "peng", _)
@@ -680,6 +747,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -694,6 +763,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			setActive(true);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "ping", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -707,6 +778,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -721,6 +794,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping");
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -742,6 +817,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping")
 			input("pong")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -761,6 +838,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping")
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -776,6 +855,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping")
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -789,6 +870,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -804,6 +887,8 @@ class EndToEndTest extends TestImplBase {
 			input("ping")
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -815,6 +900,8 @@ class EndToEndTest extends TestImplBase {
 				"def x = foo;"
 			)
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			def e = thrown(DialogScriptException)
 			e.getCause() instanceof MissingPropertyException
@@ -829,6 +916,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -843,6 +932,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping")
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -874,6 +965,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping", null, users[0]);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(users[1], _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
@@ -897,6 +990,8 @@ class EndToEndTest extends TestImplBase {
 		when:
 			input("ping", null, users[0]);
 			shutdownExecutors();
+			checkExceptions();
+
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
 		then:
