@@ -47,18 +47,23 @@ public class VerbalInputAction extends Action {
 	
 	@Override
 	protected void doExecute() {
+		// TODO: do we need session.submit here?
+		// instead require being on the session thread!
+		
+		assert (session.isOnSessionThread());
+		
 		logger.debug("Executing " + this);
 		if (user == null) {
-			session.submit({
+			//session.submit({
 				session.dialogEngines.values()*.inputComplete(type, text, details);
-			});
+			//});
 		} else {
 			if (!session.dialogEngines.containsKey(user.id)) {
 				throw new RuntimeException("User not in session: " + user);
 			}
-			session.submit({
+			//session.submit({
 				session.dialogEngines[user.id].inputComplete(type, text, details);
-			});
+			//});
 		}
 		
 		submitted();

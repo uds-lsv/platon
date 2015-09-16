@@ -679,4 +679,17 @@ class ScriptBindings {
 	public OneOf oneOf(Object... things) {
 		return new OneOf(Arrays.asList(things));
 	}
+	
+	public void decouple(Closure closure) {
+		if (scriptAdapter.initializing) {
+			throw new IllegalStateException("decouple can not be a top-level statement!");
+		}
+		
+		Action action = scriptAdapter.dialogEngine.session.activeAction;
+		if (action == null) {
+			throw new IllegalStateException("decouple can only be called while executing an action!");
+		}
+		
+		action.addPartialAction(closure);
+	}
 }

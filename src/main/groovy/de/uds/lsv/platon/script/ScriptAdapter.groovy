@@ -240,6 +240,8 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		bindings.put("send", scriptBindings.&send);
 		bindings.put("receive", scriptBindings.&receive);
 		
+		bindings.put("decouple", scriptBindings.&decouple);
+		
 		// additional definitions
 		if (definitions != null) {
 			for (Entry<String,Object> entry : definitions.entrySet()) {

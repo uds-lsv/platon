@@ -72,6 +72,19 @@ public class ActionQueue {
 		}
 	}
 	
+	private synchronized void doAddFirst(List<? extends Action> actions) {
+		assert (dialogEngine.session.isOnSessionThread());
+		boolean idle = queue.isEmpty();
+		for (Action action : actions.reverse()) {
+			prepareAction(action);
+			queue.addFirst(action);
+		}
+		
+		if (idle) {
+			dialogEngine.getSession().submit(this.&nextAction);
+		}
+	}
+	
 	public void add(Action action) {
 		dialogEngine.session.runOnSessionThread({
 			doAdd(action);
@@ -83,8 +96,14 @@ public class ActionQueue {
 			doAddFirst(action);
 		});
 	}
+	
+	public void addFirst(List<? extends Action> actions) {
+		dialogEngine.session.runOnSessionThread({
+			doAddFirst(actions);
+		});
+	}
 		
-	public synchronized void add(Collection<Action> actions) {
+	public synchronized void add(Collection<? extends Action> actions) {
 		dialogEngine.session.runOnSessionThread({
 			synchronized (this) {
 				for (Action action : actions) {
@@ -126,6 +145,14 @@ public class ActionQueue {
 			selectedAction = a;
 			it.remove();
 			break;
+		}
+		
+		if (selectedAction != null) {
+			logger.debug(String.format(
+				"Next action: %s (remaining: %d)",
+				selectedAction,
+				queue.size()
+			));
 		}
 		
 		lastAction = selectedAction;

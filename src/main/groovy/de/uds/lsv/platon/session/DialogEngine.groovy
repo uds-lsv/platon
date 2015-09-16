@@ -190,6 +190,14 @@ public class DialogEngine implements Closeable, AddListener, ModifyListener, Del
 		actionQueue.add(action);
 	}
 	
+	public void addActionFirst(Action action) {
+		actionQueue.addFirst(action);
+	}
+	
+	public ActionQueue getActionQueue() {
+		return actionQueue;
+	}
+	
 	/**
 	 * Get an unmodifiable view of the action queue.
 	 */

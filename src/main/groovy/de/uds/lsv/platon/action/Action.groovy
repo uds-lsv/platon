@@ -21,8 +21,9 @@ import groovy.transform.TypeChecked
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import de.uds.lsv.platon.session.DialogSession;
-import de.uds.lsv.platon.session.User;
+import de.uds.lsv.platon.session.DialogEngine
+import de.uds.lsv.platon.session.DialogSession
+import de.uds.lsv.platon.session.User
 
 @TypeChecked
 public abstract class Action {
@@ -175,14 +176,17 @@ public abstract class Action {
 		
 		logger.debug("Action completed: ${this} (successful: " + successful + ")");
 		
-		// Add partial actions to queue
+		// Add partial actions to the front of the queue
 		if (partialActions != null) {
-			for (PartialAction action : partialActions) {
-				// session.
-				// TODO
+			if (user == null) {
+				//session.dialogEngines?.values()*.getActionQueue().addFirst(partialActions);
+				for (DialogEngine dialogEngine : session.dialogEngines.values()) {
+					dialogEngine.getActionQueue().addFirst(partialActions);
+				}
+			} else {
+				session.dialogEngines?.get(user.id)?.getActionQueue().addFirst(partialActions);
 			}
 		}
-		
 		
 		// Add to history
 		if (user == null) {
@@ -247,11 +251,19 @@ public abstract class Action {
 	}
 	
 	public PartialAction addPartialAction(Closure closure) {
+		logger.debug("Adding partial action of ${this}: " + closure);
+		
 		if (completed) {
 			throw new IllegalStateException("Action is already completed!");
 		}
 		
 		PartialAction partialAction = new PartialAction(this, closure);
+		
+		if (partialActions == null) {
+			partialActions = new ArrayList<>();
+		}
+		partialActions.add(partialAction);
+		
 		addFollowupAction(partialAction);
 		return partialAction;
 	}

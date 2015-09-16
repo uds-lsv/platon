@@ -158,6 +158,19 @@ public class DialogSession implements Closeable {
 		}
 	}
 	
+	public void submit(Action action) {
+		submit({
+			Action oldAction = this.activeAction;
+			this.activeAction = action;
+			try {
+				action.execute();
+			}
+			finally {
+				this.activeAction = oldAction;
+			}
+		});
+	}
+	
 	/**
 	 * Submit a task to be executed on the executor thread,
 	 * at the next possible time.
@@ -386,7 +399,7 @@ public class DialogSession implements Closeable {
 			details
 		);
 	
-		submit(action.&execute);
+		submit(action);
 	}
 	
 	public void inputAbandoned(User speaker, IOType ioType) {

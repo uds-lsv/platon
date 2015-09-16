@@ -878,5 +878,31 @@ class EndToEndTest extends TestImplBase {
 			1 * dialogClientMonitor.outputStart(users[1], _, "pong", _)
 			0 * dialogClientMonitor.outputStart(_, _, _, _)
 	}
+	
+	def testDecoupleSimple() {
+		setup:
+			init("""
+				input("ping") {
+					tell user, "pong";
+					decouple {
+						println "ACTION pong1";
+						tell user, "pong1";
+					}
+					decouple {
+						println "ACTION pong2";
+						tell user, "pong2";
+					}
+				}
+			""")
+		when:
+			input("ping", null, users[0]);
+			shutdownExecutors();
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong", _)
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong1", _)
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "pong2", _)
+	}
 }
 
