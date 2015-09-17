@@ -40,6 +40,11 @@ public class VerbalInputAction extends Action {
 		Map<String, String> details
 	) {
 		super(session, true, user);
+		
+		if (user == null) {
+			throw new IllegalArgumentException("User cannot be null!");
+		}
+		
 		this.type = type;
 		this.text = text;
 		this.details = details;
@@ -47,24 +52,19 @@ public class VerbalInputAction extends Action {
 	
 	@Override
 	protected void doExecute() {
-		// TODO: do we need session.submit here?
-		// instead require being on the session thread!
-		
 		assert (session.isOnSessionThread());
 		
 		logger.debug("Executing " + this);
-		if (user == null) {
-			//session.submit({
-				session.dialogEngines.values()*.inputComplete(type, text, details);
-			//});
-		} else {
-			if (!session.dialogEngines.containsKey(user.id)) {
-				throw new RuntimeException("User not in session: " + user);
-			}
-			//session.submit({
-				session.dialogEngines[user.id].inputComplete(type, text, details);
-			//});
+		//if (user == null) {
+		//	session.dialogEngines.values()*.inputComplete(type, text, details);
+		//} else {
+		
+		if (!session.dialogEngines.containsKey(user.id)) {
+			throw new RuntimeException("User not in session: " + user);
 		}
+		session.dialogEngines[user.id].inputComplete(type, text, details);
+		
+		//}
 		
 		submitted();
 		complete();

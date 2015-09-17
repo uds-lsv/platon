@@ -28,7 +28,16 @@ public class Stdlib {
 			) {
 				filtered.add(element);
 			}
+			
+			// We don't care about anything after de.uds.lsv.platon.action.ActionQueue.nextAction
+			if (
+				(element.getClassName() == de.uds.lsv.platon.action.ActionQueue.class.getName()) &&
+				element.getMethodName() == "nextAction"
+			) {
+				break;
+			}
 		}
+		
 		return filtered;
 	}
 

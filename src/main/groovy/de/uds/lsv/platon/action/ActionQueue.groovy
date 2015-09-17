@@ -32,8 +32,9 @@ public class ActionQueue {
 
 	Action lastAction = null;
 	
-	// Actions that are still waiting for followup actions to complete
-	private Map<Class<? extends Action>, Action> blockingActions = new HashMap<>();
+	// Actions that are blocking certain other actions from
+	// being processed.
+	private LinkedList<Action> blockingActionStack = new LinkedList<>();
 	
 	public ActionQueue(DialogEngine dialogEngine) {
 		this.dialogEngine = dialogEngine;
@@ -113,6 +114,67 @@ public class ActionQueue {
 		});
 	}
 	
+	private void cleanBlockingStack() {
+		// An action can never be removed from the stack before
+		// its "child" actions are complete, because they are in
+		// the actions followupActions list.
+		ListIterator<Action> it = blockingActionStack.listIterator(blockingActionStack.size());
+		while (it.hasPrevious()) {
+			Action action = it.previous();
+			if (action.followupActionsCompleted()) {
+				it.remove();
+			} else {
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Blocking stack needs to be cleaned before
+	 * calling this method!
+	 */
+	private boolean isActionBlocked(Action action) {
+		if (action instanceof VerbalInputAction) {
+			// VerbalInputActions are blocked by everything on the stack
+			return !blockingActionStack.isEmpty();
+		
+		} else if (action instanceof PartialAction) {
+			// PartialActions are blocked if they were not created by
+			// one of the actions on the stack.
+			PartialAction partialAction = (PartialAction)action;
+			return (
+				(partialAction.parent == null) ||
+				!blockingActionStack.any({
+					partialAction.parent.is(it)
+				})
+			);
+		
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Add an action to blocking stack if
+	 * a) it is a VerbalInputAction, or
+	 * b) it is a PartialAction derived from a VIA
+	 *    on the blocking stack
+	 */
+	private void putOnBlockingStack(Action action) {
+		if (
+			(action instanceof VerbalInputAction) ||
+			(
+				(action instanceof PartialAction) &&
+				blockingActionStack.any {
+					((PartialAction)action).parent.is(it)
+				}
+			)
+		) {
+			// Cast due to Groovy type checker bug
+			blockingActionStack.push((Action)action);
+		}
+	}
+	
 	/**
 	 * Important: Actions need to be executed on the session
 	 * executor thread! However, session.submit(...) must not run the
@@ -125,21 +187,17 @@ public class ActionQueue {
 		// the history here.
 		// All actions: history + lastAction + queue
 		
+		cleanBlockingStack();
+		
 		Action selectedAction = null;
 		Iterator<Action> it = queue.iterator();
 		while (it.hasNext()) {
 			Action a = it.next();
-			Class<? extends Action> cls = a.getClass();
-			Action blocking = blockingActions.get(cls);
-			if (blocking != null) {
-				if (blocking.followupActionsCompleted()) {
-					blockingActions.remove(cls);
-				} else {
-					logger.debug(
-						"Action still waiting for followup actions: " + a
-					);
-					continue;
-				}
+			if (isActionBlocked(a)) {
+				logger.debug(
+					"Action still waiting for followup actions: " + a
+				);
+				continue;
 			}
 			
 			selectedAction = a;
@@ -158,7 +216,7 @@ public class ActionQueue {
 		lastAction = selectedAction;
 		
 		if (selectedAction != null) {
-			blockingActions.put(lastAction.getClass(), selectedAction);
+			putOnBlockingStack(selectedAction);
 			selectedAction.execute();
 		}
 	}

@@ -34,6 +34,21 @@ class StdlibTest extends TestImplBase {
 			2 * dialogClientMonitor.outputStart(_, _, "peng", _)
 	}
 	
+	def testOnceNotApplicable() {
+		setup:
+			init("""
+				#include 'stdlib.groovy'
+				input('ping') { tell user, Stdlib.once('pong', 'peng'), uninterruptible: true; }
+				input('pong') { tell user, Stdlib.once('pong', 'peng'), uninterruptible: true; }
+			""")
+		when:
+			input("ping");
+			input("pong");
+			shutdownExecutors();
+		then:
+			2 * dialogClientMonitor.outputStart(_, _, "pong", _)
+	}
+	
 	def testOnceLoop() {
 		setup:
 			init("""

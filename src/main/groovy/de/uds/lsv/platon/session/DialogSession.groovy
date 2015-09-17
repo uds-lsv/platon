@@ -19,6 +19,7 @@ package de.uds.lsv.platon.session;
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
+import java.util.Map.Entry
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -391,16 +392,31 @@ public class DialogSession implements Closeable {
 	
 	public void inputComplete(User speaker, IOType ioType, String text, Map<String,String> details) {
 		logger.debug("inputComplete(${speaker}, ${ioType}, ${text}, ${details})");
-		VerbalInputAction action = new VerbalInputAction(
-			this,
-			speaker,
-			ioType,
-			text,
-			details
-		);
-	
-		// TODO: ActionQueue?
-		submit(action);
+		
+		if (speaker == null) {
+			for (DialogEngine dialogEngine : dialogEngines.values()) {
+					VerbalInputAction action = new VerbalInputAction(
+					this,
+					dialogEngine.getUser(),
+					ioType,
+					text,
+					details
+				);
+				
+				dialogEngine.addAction(action);
+			}
+			
+		} else {
+			VerbalInputAction action = new VerbalInputAction(
+				this,
+				speaker,
+				ioType,
+				text,
+				details
+			);
+		
+			dialogEngines[speaker.id].addAction(action);
+		}
 	}
 	
 	public void inputAbandoned(User speaker, IOType ioType) {
@@ -441,5 +457,9 @@ public class DialogSession implements Closeable {
 	
 	public void setActiveAction(Action action) {
 		this.activeAction = action;
+	}
+	
+	public void addPartialAction(Closure closure) {
+		this.activeAction.addPartialAction(closure);
 	}
 }

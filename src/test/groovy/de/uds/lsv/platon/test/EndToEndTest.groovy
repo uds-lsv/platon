@@ -999,5 +999,9 @@ class EndToEndTest extends TestImplBase {
 		then:
 			1 * dialogClientMonitor.outputStart(_, _, "pong2", _)
 	}
+	
+	def testBlockingInputActions() {
+		// TODO
+	}
 }
 

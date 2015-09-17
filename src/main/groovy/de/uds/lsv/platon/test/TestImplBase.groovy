@@ -226,7 +226,6 @@ public class TestImplBase extends Specification {
 	}
 	
 	void checkExceptions() {
-		println "checkExceptions! " + exceptions;
 		if (!exceptions.isEmpty()) {
 			System.err.println(String.format(
 				"There have been %d exceptions!",
