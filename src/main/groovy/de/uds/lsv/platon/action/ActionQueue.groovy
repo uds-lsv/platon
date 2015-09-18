@@ -142,11 +142,12 @@ public class ActionQueue {
 			// PartialActions are blocked if they were not created by
 			// one of the actions on the stack.
 			PartialAction partialAction = (PartialAction)action;
-			return (
-				(partialAction.parent == null) ||
-				!blockingActionStack.any({
-					partialAction.parent.is(it)
-				})
+			return !(
+				blockingActionStack.isEmpty() ||
+				(
+					partialAction.parent != null &&
+					partialAction.parent.is(blockingActionStack.peekLast())
+				)
 			);
 		
 		} else {

@@ -48,9 +48,6 @@ import de.uds.lsv.platon.world.WorldState.ModifyListener
 @TypeChecked
 public class ScriptAdapter implements AddListener, ModifyListener, DeleteListener, ReactionTrigger, EnvironmentListener, SessionActiveListener, FallbackListener {
 	private static final Log logger = LogFactory.getLog(ScriptAdapter.class.getName());
-	
-	//public static final String NAMED_REACTION_STARTED = "main:started";
-	//public static final String NAMED_REACTION_STOPPED = "main:stopped";
 		
 	User user;
 	final Object addresseeAll = "all";
