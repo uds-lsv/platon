@@ -16,43 +16,25 @@
 
 Integer.metaClass.millisecond << {
 	closure ->
-	if (delegate != 1) {
-		logger.error(String.format('Grammar exception! Plural expected in »%d.millisecond«! ;)', delegate));
-	}
 	return new de.uds.lsv.platon.script.TimeDurationWithClosure(0, 0, 0, delegate, closure);
 };
 Integer.metaClass.getMillisecond << {
-	if (delegate != 1) {
-		logger.error(String.format('Grammar exception! Plural expected in »%d.millisecond«! ;)', delegate));
-	}
 	return new groovy.time.TimeDuration(0, 0, 0, delegate);
 };
 
 Integer.metaClass.second << {
 	closure ->
-	if (delegate != 1) {
-		logger.error(String.format('Grammar exception! Plural expected in »%d.second«! ;)', delegate));
-	}
 	return new de.uds.lsv.platon.script.TimeDurationWithClosure(0, 0, delegate, 0, closure);
 };
 Integer.metaClass.getSecond << {
-	if (delegate != 1) {
-		logger.error(String.format('Grammar exception! Plural expected in »%d.second«! ;)', delegate));
-	}
 	return new groovy.time.TimeDuration(0, 0, delegate, 0);
 };
 
 Integer.metaClass.minute << {
 	closure ->
-	if (delegate != 1) {
-		logger.error(String.format('Grammar exception! Plural expected in »%d.minute«! ;)', delegate));
-	}
 	return new de.uds.lsv.platon.script.TimeDurationWithClosure(0, delegate, 0, 0, closure);
 };
 Integer.metaClass.getMinute << {
-	if (delegate != 1) {
-		logger.error(String.format('Grammar exception! Plural expected in »%d.minute«! ;)', delegate));
-	}
 	return new groovy.time.TimeDuration(0, delegate, 0, 0);
 };
 
