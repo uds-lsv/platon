@@ -37,6 +37,6 @@ public class PartialAction extends Action {
 	
 	@Override
 	public String toString() {
-		return String.format("[PartialAction of %s]", parent);
+		return String.format("[PartialAction of %s: %s]", parent, closure);
 	}
 }

@@ -978,11 +978,9 @@ class EndToEndTest extends TestImplBase {
 				input("ping") {
 					tell user, "pong";
 					decouple {
-						println "ACTION pong1";
 						tell user, "pong1";
 					}
 					decouple {
-						println "ACTION pong2";
 						tell user, "pong2";
 					}
 				}
@@ -1000,8 +998,69 @@ class EndToEndTest extends TestImplBase {
 			1 * dialogClientMonitor.outputStart(_, _, "pong2", _)
 	}
 	
-	def testBlockingInputActions() {
-		// TODO
+	def testMultiplePreparedInputs() {
+		setup:
+			init("""
+				prepareInput({ new de.uds.lsv.platon.script.InputSequence([ 1, 2, 3 ]) });
+
+				input(1) {
+					tell user, 'A';
+				}
+
+				input(2) {
+					tell user, 'B';
+				}
+
+				input(3) {
+					tell user, 'C';
+				}
+			""")
+		when:
+			input("ping", null, users[0]);
+			shutdownExecutors();
+			checkExceptions();
+
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "A", _)
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "B", _)
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, "C", _)
+	}
+
+	def testBlockingPartialActionsWithMultiplePreparedInputs() {
+		setup:
+			init("""
+				prepareInput({ new de.uds.lsv.platon.script.InputSequence([ 1, 2 ]) });
+
+				input(1) {
+					object('door1').isOpen = true;
+				}
+
+				input(2) {
+					if (object('door1').isOpen) {
+						tell user, 'pong';
+					} else {
+						tell user, 'error';
+					}
+				}
+			""")
+			addObject([
+				(WorldObject.FIELD_TYPE): TestDoor.TYPE,
+				(WorldObject.FIELD_ID): "door1",
+				"isOpen": "false",
+				"isLocked": "false"
+			])
+			
+		when:
+			input("ping", null, users[0]);
+			shutdownExecutors();
+			checkExceptions();
+
+		then:
+			1 * dialogWorldMonitor.changeRequestModify(-1, [ 'id': 'door1', 'isOpen': 'true' ])
+		then:
+			1 * dialogClientMonitor.outputStart(_, _, 'pong', _)
 	}
 }
 

@@ -79,7 +79,7 @@ public class Then {
 		}
 		
 		if (!completionReactionAdded) {
-			afterAction.addCompletionReaction({
+			afterAction.addCompletionReactionFirst({
 				boolean successful ->
 				
 				if (!dialogEngine.session.isActive()) {

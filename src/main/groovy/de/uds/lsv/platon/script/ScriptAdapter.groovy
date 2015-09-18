@@ -352,7 +352,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	 *   true, iff at least a part of the prepared input could be handled.
 	 */
 	@TypeChecked(TypeCheckingMode.SKIP)
-	public boolean handleInput(String input, Map<String,String> details=null) {
+	public void handleInput(String input, Map<String,String> details=null) {
 		if (
 			dialogEngine.getSession().executorThread != null &&
 			dialogEngine.getSession().executorThread != Thread.currentThread()
@@ -364,7 +364,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		
 		if (input == null || input.trim().length() == 0) {
 			logger.info("Ignoring empty input.");
-			return true;
+			return;
 		}
 		
 		if (details != null) {
@@ -397,16 +397,21 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 			}
 			
 			// handle prepared parts
-			boolean result = false;
-			for (Object currentInput : preparedInputs) {
-				if (handlePreparedInput(currentInput, details)) {
-					result = true;
-				} else {
-					logger.debug("Script can not (fully) handle input »" + input + "« (prepared: " + currentInput + "). Agent stack: »" + agentStack + "«.");
+			if (preparedInputs.size() == 1) {
+				if (!handlePreparedInput(preparedInputs[0], details)) {
+					logger.debug("Script can not (fully) handle input »" + input + "« (prepared: " + preparedInputs[0]+ "). Agent stack: »" + agentStack + "«.");
+				}
+			} else {
+				for (Object currentInput : preparedInputs) {
+					logger.debug("Decoupling reactions for " + currentInput);
+					Object decoupledInput = currentInput;
+					dialogEngine.getSession().addPartialAction({
+						if (!handlePreparedInput(decoupledInput, details)) {
+							logger.debug("Script can not (fully) handle input »" + input + "« (prepared: " + decoupledInput + "). Agent stack: »" + agentStack + "«.");
+						}
+					});
 				}
 			}
-			
-			return result;
 		}
 		catch (Exception e) {
 			logger.error(e);

@@ -218,6 +218,7 @@ public class ActionQueue {
 		
 		if (selectedAction != null) {
 			putOnBlockingStack(selectedAction);
+			// TODO: shouldn't this go through session.submit(Action)?
 			selectedAction.execute();
 		}
 	}
