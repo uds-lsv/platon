@@ -46,7 +46,7 @@ public class Stdlib {
 	 * and another value for all following calls.
 	 * 
 	 * Example:
-	 * tell user, "important message!", priority: Stdlib.once("high", "normal")
+	 * tell user, "important message!", priority: stdlib.once("high", "normal")
 	 * 
 	 * Note:
 	 * Unless you use the id argument, the once call is identified by the first
@@ -65,7 +65,7 @@ public class Stdlib {
 	 *   belong together (thread local).
 	 * @return
 	 */
-	public static def once(first, then=null, String id=null) {
+	public def once(first, then=null, String id=null) {
 		if (id == null) {
 			id = String.format(
 				"%d\"auto\"%s\"%s\"%s",
@@ -77,6 +77,8 @@ public class Stdlib {
 		} else {
 			id = "" + Thread.currentThread().getId() + "\"manual\"" + id;
 		}
+		
+		((org.apache.commons.logging.Log)scriptAdapter.bindings.logger).debug("stdlib.once: id=»${id}«");
 		
 		if (onceIdsAlreadyUsed.contains(id)) {
 			return then;

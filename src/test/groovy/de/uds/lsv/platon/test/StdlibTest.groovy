@@ -21,7 +21,7 @@ class StdlibTest extends TestImplBase {
 		setup:
 			init("""
 				#include 'stdlib.groovy'
-				input('ping') { tell user, Stdlib.once('pong', 'peng'), uninterruptible: true; }
+				input('ping') { tell user, stdlib.once('pong', 'peng'), uninterruptible: true; }
 			""")
 		when:
 			input("ping");
@@ -38,8 +38,8 @@ class StdlibTest extends TestImplBase {
 		setup:
 			init("""
 				#include 'stdlib.groovy'
-				input('ping') { tell user, Stdlib.once('pong', 'peng'), uninterruptible: true; }
-				input('pong') { tell user, Stdlib.once('pong', 'peng'), uninterruptible: true; }
+				input('ping') { tell user, stdlib.once('pong', 'peng'), uninterruptible: true; }
+				input('pong') { tell user, stdlib.once('pong', 'peng'), uninterruptible: true; }
 			""")
 		when:
 			input("ping");
@@ -53,7 +53,7 @@ class StdlibTest extends TestImplBase {
 		setup:
 			init("""
 				#include 'stdlib.groovy'
-				input('ping') { for (i in 1..3) { tell user, Stdlib.once('pong', 'peng'), uninterruptible: true; } }
+				input('ping') { for (i in 1..3) { tell user, stdlib.once('pong', 'peng'), uninterruptible: true; } }
 			""")
 		when:
 			input("ping");
@@ -68,7 +68,7 @@ class StdlibTest extends TestImplBase {
 		setup:
 			init("""
 				#include 'stdlib.groovy'
-				input('ping') { for (i in 1..3) { tell user, Stdlib.once('pong', 'peng', "my id"), uninterruptible: true; } }
+				input('ping') { for (i in 1..3) { tell user, stdlib.once('pong', 'peng', "my id"), uninterruptible: true; } }
 			""")
 		when:
 			input("ping");
