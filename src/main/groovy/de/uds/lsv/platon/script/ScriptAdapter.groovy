@@ -516,7 +516,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		List matching = new ArrayList();
 		
 		for (AgentInstance agent : agentStack) {
-			for (PatternAction patternAction : agent.getInputActions()) {
+			for (PatternAction patternAction : agent.getIntercomActions()) {
 				Object result = patternAction.matches(message, sender.user);
 				if (result != null) {
 					if (patternAction.priority == Double.POSITIVE_INFINITY) {

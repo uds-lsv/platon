@@ -133,7 +133,7 @@ public class Agent implements ReactionAgent {
 	}
 	
 	public void addIntercomAction(Object pattern, Closure action, double priority) {
-		inputActions.add(
+		intercomActions.add(
 			new InternalPatternAction(pattern, action, priority)
 		);
 	}
