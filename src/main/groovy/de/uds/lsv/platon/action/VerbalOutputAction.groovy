@@ -39,7 +39,7 @@ public class VerbalOutputAction extends Action {
 		this.text = text;
 		this.details = details;
 		if (session?.config != null) {
-			this.timeoutMillis = session.config.defaultActionTimeoutMillis;
+			this.timeoutMillis = session.config.verbalActionTimeoutMillis;
 		}
 	}
 	
