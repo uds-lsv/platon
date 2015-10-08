@@ -280,6 +280,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -415,6 +416,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -586,6 +588,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -627,6 +630,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -653,6 +657,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -676,6 +681,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -698,6 +704,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 		catch (Exception e) {
 			logger.error(e);
+			logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 			e.printStackTrace();
 			throw exceptionMapper.translateException(e);
 		}
@@ -733,7 +740,8 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 					}
 					catch (Exception e) {
 						logger.error(e);
-			e.printStackTrace();
+						logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
+						e.printStackTrace();
 						throw exceptionMapper.translateException(e);
 					}
 				}
@@ -743,6 +751,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 				}
 				catch (Exception e) {
 					logger.error(e);
+					logger.error("Trace: " + Arrays.asList(e.getStackTrace()).toString());
 					e.printStackTrace();
 					throw exceptionMapper.translateException(e);
 				}

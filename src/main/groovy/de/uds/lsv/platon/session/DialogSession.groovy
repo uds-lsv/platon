@@ -138,6 +138,7 @@ public class DialogSession implements Closeable {
 			catch (Throwable t) {
 				t.printStackTrace();
 				logger.error(t);
+				logger.error("Trace: " + Arrays.asList(t.getStackTrace()).toString());
 				if (config.serverExceptionHandler != null) {
 					config.serverExceptionHandler(t);
 				}
@@ -213,6 +214,7 @@ public class DialogSession implements Closeable {
 				catch (Throwable t) {
 					t.printStackTrace();
 					logger.error(t);
+					logger.error("Trace: " + Arrays.asList(t.getStackTrace()).toString());
 				}
 			} as Runnable,
 			delayMilliseconds,
