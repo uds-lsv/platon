@@ -186,13 +186,9 @@ public abstract class Action {
 				//session.dialogEngines?.values()*.getActionQueue().addFirst(partialActions);
 				for (DialogEngine dialogEngine : session.dialogEngines.values()) {
 					dialogEngine.getActionQueue().addFirst(partialActions);
-					println "new action queue:"
-					println dialogEngine.getActionQueue().getQueue();
 				}
 			} else {
 				session.dialogEngines?.get(user.id)?.getActionQueue().addFirst(partialActions);
-				println "new action queue:"
-				println session.dialogEngines?.get(user.id)?.getActionQueue().getQueue();
 			}
 		}
 		
