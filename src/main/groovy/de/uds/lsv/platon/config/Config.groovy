@@ -118,6 +118,11 @@ public class Config {
 	 */
 	public boolean disableBargeIn = false;
 	
+	/**
+	 * Set to a closure to dump the dialog script file.
+	 */
+	public Closure dumpDialogScript = null;
+	
 	@Override
 	public String toString() {
 		Class<?> cls = getClass();

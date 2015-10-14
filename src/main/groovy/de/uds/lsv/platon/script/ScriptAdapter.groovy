@@ -29,6 +29,7 @@ import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl
 import de.martingropp.util.IdleManager
 import de.martingropp.util.ReactionTrigger
 import de.martingropp.util.ScoredObject
+import de.uds.lsv.platon.config.Config;
 import de.uds.lsv.platon.script.ListenableBindings.FallbackListener
 import de.uds.lsv.platon.session.DialogEngine
 import de.uds.lsv.platon.session.User
@@ -155,7 +156,18 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		}
 	}
 	
-	private void initialize(IncludeReader script, DialogEngine dialogEngine, Map<String,Object> definitions, String initScript) {
+	@TypeChecked(TypeCheckingMode.SKIP)
+	private String readDialogScript(IncludeReader scriptReader) {
+		String script = scriptReader.readLines().join('\n');
+		
+		if (dialogEngine.session.config.dumpDialogScript != null) {
+			dialogEngine.session.config.dumpDialogScript(script);
+		}
+		
+		return script;
+	}
+	
+	private void initialize(IncludeReader scriptReader, DialogEngine dialogEngine, Map<String,Object> definitions, String initScript) {
 		bindings = new ListenableBindings();
 		bindings.setFallbackListener(this);
 		
@@ -259,7 +271,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 			reader.close();
 		}
 		
-		this.exceptionMapper = new ExceptionMapper(script, scriptEngine.getClassLoader());
+		this.exceptionMapper = new ExceptionMapper(scriptReader, scriptEngine.getClassLoader());
 		
 		initializing = true;
 		
@@ -268,6 +280,8 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 			logger.debug("Running initialization script");
 			scriptEngine.eval(initScript);
 		}
+		
+		String script = readDialogScript(scriptReader);
 		
 		try {
 			scriptEngine.eval(script, bindings);

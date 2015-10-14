@@ -238,7 +238,7 @@ public class IncludeReader extends PreprocessingReader {
 	
 	@Override
 	protected void popReader() throws IOException {
-		logger.debug("End of input file in line " + (getLine() + 1));
+		logger.debug("End of input file in line " + getLine()); // no +1
 		super.popReader();
 		if (currentOrigin != null) {
 			currentOrigin = currentOrigin.end(getLine());
