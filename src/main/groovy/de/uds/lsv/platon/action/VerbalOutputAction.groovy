@@ -81,7 +81,15 @@ public class VerbalOutputAction extends Action {
 						text,
 						details
 					);
-					logger.debug("Output id is ${outputId} for " + this);
+					logger.debug(String.format(
+						"outputStart(%s, %s, %s, %s) -> %d for %s",
+						user,
+						type,
+						text,
+						details,
+						outputId,
+						this
+					));
 					submitted();
 					
 					session.addOutputReaction(

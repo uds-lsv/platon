@@ -238,6 +238,7 @@ public class IncludeReader extends PreprocessingReader {
 	
 	@Override
 	protected void popReader() throws IOException {
+		logger.debug("End of input file in line " + (getLine() + 1));
 		super.popReader();
 		if (currentOrigin != null) {
 			currentOrigin = currentOrigin.end(getLine());
@@ -329,7 +330,8 @@ public class IncludeReader extends PreprocessingReader {
 			URL includeUrl = resolved.second;
 			
 			logger.debug(String.format(
-				"Including script from %s",
+				"Including script in line %d from %s",
+				getLine() + 1,
 				includeUrl
 			));
 			
