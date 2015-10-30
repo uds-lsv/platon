@@ -41,6 +41,8 @@ import de.uds.lsv.platon.world.WorldObject
 class ScriptBindings {
 	private static final Log logger = LogFactory.getLog(ScriptBindings.class.getName());
 
+	public static final Object ADDRESSEE_ALL = "all";
+	
 	private final ScriptAdapter scriptAdapter;
 	
 	// During initialization: the agent to which elements are added
@@ -459,7 +461,7 @@ class ScriptBindings {
 		User addresseeUser;
 		if (addressee == scriptAdapter.user) {
 			addresseeUser = scriptAdapter.dialogEngine.user;
-		} else if (addressee == scriptAdapter.addresseeAll) {
+		} else if (addressee == ADDRESSEE_ALL) {
 			addresseeUser = null;
 		} else {
 			throw new IllegalArgumentException("Invalid addressee: " + addressee);
@@ -654,11 +656,19 @@ class ScriptBindings {
 		agentUnderConstruction.addAgent(agent);
 	}
 	
-	public void send(User addressee, Object message) {
-		scriptAdapter.dialogEngine.session.submit({
-			DialogEngine otherDialogEngine = scriptAdapter.dialogEngine.session.dialogEngines[addressee.id];
-			otherDialogEngine.sendInternal(scriptAdapter.dialogEngine, message);
-		});
+	public void send(Object addressee, Object message) {
+		if (addressee instanceof User) {
+			scriptAdapter.dialogEngine.session.submit({
+				DialogEngine otherDialogEngine = scriptAdapter.dialogEngine.session.dialogEngines[addressee.id];
+				otherDialogEngine.sendInternal(scriptAdapter.dialogEngine, message);
+			});
+		} else if (addressee == ADDRESSEE_ALL) {
+			for (User user : scriptAdapter.dialogEngine.session.users) {
+				send(user, message);
+			}
+		} else {
+			throw new IllegalArgumentException("Invalid addressee: " + addressee);
+		}
 	}
 	
 	public void receive(priority=true, pattern, Closure action) {

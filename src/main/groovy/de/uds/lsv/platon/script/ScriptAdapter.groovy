@@ -51,8 +51,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 	private static final Log logger = LogFactory.getLog(ScriptAdapter.class.getName());
 		
 	User user;
-	final Object addresseeAll = "all";
-
+	
 	DialogEngine dialogEngine;
 	String language;
 	
@@ -226,7 +225,7 @@ public class ScriptAdapter implements AddListener, ModifyListener, DeleteListene
 		
 		bindings.put("users", dialogEngine.session.users);
 		bindings.put("user", user);
-		bindings.put("all", addresseeAll);
+		bindings.put("all", ScriptBindings.ADDRESSEE_ALL);
 		
 		bindings.put("objectModified", scriptBindings.&objectModified);
 		bindings.put("objectAdded", scriptBindings.&objectAdded);
