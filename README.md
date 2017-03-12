@@ -17,6 +17,7 @@ natural language understanding and generation, while Platon can
 itself be integrated even in non-JVM projects or run in a stand-alone
 debugging tool for testing.
 
+Platon is currently not actively maintained.
 
 Maven
 -----
